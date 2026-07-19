@@ -1,0 +1,9 @@
+<Solution>
+  <Folder Name="/Backend/">
+    <Project Path="src/backend/Mira.API/Mira.API.csproj" />
+    <Project Path="src/backend/Mira.Contracts/Mira.Contracts.csproj" />
+    <Project Path="src/backend/Mira.Domain/Mira.Domain.csproj" />
+    <Project Path="src/backend/Mira.Infrastructure/Mira.Infrastructure.csproj" />
+    <Project Path="src/backend/Mira.Shared/Mira.Shared.csproj" />
+  </Folder>
+</Solution>
