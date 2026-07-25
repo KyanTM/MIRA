@@ -1,9 +1,12 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Mira.Infrastructure.Identity;
 using Mira.Domain.Entities;
 
 namespace Mira.Infrastructure.DbContexts;
 
-public class MiraContext(DbContextOptions<MiraContext> options) : DbContext(options)
+public class MiraContext(DbContextOptions<MiraContext> options) : IdentityDbContext<ApplicationUser, IdentityRole<Guid>, Guid>(options)
 {
     public DbSet<Item> Items => Set<Item>();
     public DbSet<Asset> Assets => Set<Asset>();
@@ -92,7 +95,13 @@ public class MiraContext(DbContextOptions<MiraContext> options) : DbContext(opti
             .HasOne(subscription => subscription.Contract)
             .WithMany(contract => contract.Subscriptions)
             .HasForeignKey(subscription => subscription.ContractId)
-            .OnDelete(DeleteBehavior.SetNull);
+            .OnDelete(DeleteBehavior.NoAction);
+
+        modelBuilder.Entity<Item>()
+            .HasOne<ApplicationUser>()
+            .WithMany()
+            .HasForeignKey(item => item.UserId)
+            .OnDelete(DeleteBehavior.Restrict);
     }
 
     private static void ConfigureIndexes(ModelBuilder modelBuilder)
