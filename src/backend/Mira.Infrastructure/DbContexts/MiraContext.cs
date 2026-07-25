@@ -95,7 +95,7 @@ public class MiraContext(DbContextOptions<MiraContext> options) : IdentityDbCont
             .HasOne(subscription => subscription.Contract)
             .WithMany(contract => contract.Subscriptions)
             .HasForeignKey(subscription => subscription.ContractId)
-            .OnDelete(DeleteBehavior.SetNull);
+            .OnDelete(DeleteBehavior.NoAction);
 
         modelBuilder.Entity<Item>()
             .HasOne<ApplicationUser>()
