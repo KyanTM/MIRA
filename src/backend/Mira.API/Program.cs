@@ -4,6 +4,9 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Mira.Infrastructure.Identity;
+using Mira.Infrastructure.Repositories;
+using Mira.API.MappingProfiles;
+using Microsoft.OpenApi;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -79,11 +82,40 @@ builder.Services.AddAntiforgery(options =>
 });
 
 
-builder.Services.AddControllers(options =>
+builder.Services.AddControllersWithViews(options =>
 {
     options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute());
 });
-builder.Services.AddSwaggerGen();
+
+builder.Services.AddScoped<IAssetRepository, AssetRepository>();
+
+builder.Services.AddAutoMapper(configuration =>
+{
+    var licenseKey = builder.Configuration["AutoMapperKey"];
+
+    if (!string.IsNullOrWhiteSpace(licenseKey))
+    {
+        configuration.LicenseKey = licenseKey;
+    }
+}, typeof(AssetProfile).Assembly);
+
+builder.Services.AddSwaggerGen(options =>
+{
+    const string antiforgeryScheme = "XSRF";
+
+    options.AddSecurityDefinition(antiforgeryScheme, new OpenApiSecurityScheme
+    {
+        Name = "X-XSRF-TOKEN",
+        Type = SecuritySchemeType.ApiKey,
+        In = ParameterLocation.Header,
+        Description = "Haal eerst een token op via GET /api/security/antiforgery en plak het hier."
+    });
+
+    options.AddSecurityRequirement(document => new OpenApiSecurityRequirement
+    {
+        [new OpenApiSecuritySchemeReference(antiforgeryScheme, document)] = []
+    });
+});
 
 var app = builder.Build();
 
