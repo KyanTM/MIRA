@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Mira.Infrastructure.Repositories;
-using Mira.Contracts.Models;
+using Mira.Contracts.Models.Asset;
 using Mira.Domain.Entities;
 using Mira.Domain.Enums;
 using AutoMapper;

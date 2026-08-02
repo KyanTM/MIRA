@@ -1,5 +1,5 @@
 using AutoMapper;
-using Mira.Contracts.Models;
+using Mira.Contracts.Models.Asset;
 using Mira.Domain.Entities;
 
 namespace Mira.API.MappingProfiles;
