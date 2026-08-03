@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
-using Microsoft.AspNetCore.Authorization;
 using Mira.Infrastructure.Repositories;
 using Mira.Contracts.Models.Asset;
 using Mira.Domain.Entities;
@@ -9,7 +8,6 @@ using AutoMapper;
 
 namespace Mira.API.Controllers;
 
-[Authorize]
 [ApiController]
 [Route("api/assets")]
 public class AssetsController : ControllerBase
@@ -101,7 +99,7 @@ public class AssetsController : ControllerBase
     }
 
     [HttpPut("{id:guid}")]
-    public async Task<IActionResult> UpdateAsset(
+    public async Task<ActionResult<AssetDetailDto>> UpdateAsset(
         Guid id,
         UpdateAssetDto updateAssetDto)
     {
@@ -123,13 +121,22 @@ public class AssetsController : ControllerBase
         _mapper.Map(updateAssetDto, asset);
         asset.UpdatedAt = DateTimeOffset.UtcNow;
 
-        await _assetRepository.SaveChangesAsync();
+        var wasSaved = await _assetRepository.SaveChangesAsync();
 
-        return NoContent();
+        if (!wasSaved)
+        {
+            return Problem(
+                detail: "De asset kon niet worden bijgewerkt.");
+        }
+
+        var updatedAssetDto =
+            _mapper.Map<AssetDetailDto>(asset);
+
+        return Ok(updatedAssetDto);
     }
 
     [HttpPatch("{id:guid}/archive")]
-    public async Task<IActionResult> ArchiveAsset(Guid id)
+    public async Task<ActionResult<AssetDetailDto>> ArchiveAsset(Guid id)
     {
         var userIdValue =
             User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -148,7 +155,10 @@ public class AssetsController : ControllerBase
 
         if (asset.Status == ItemStatus.Archived)
         {
-            return NoContent();
+            var alreadyArchivedDto =
+                _mapper.Map<AssetDetailDto>(asset);
+
+            return Ok(alreadyArchivedDto);
         }
 
         var archivedAt = DateTimeOffset.UtcNow;
@@ -157,13 +167,22 @@ public class AssetsController : ControllerBase
         asset.ArchivedAt = archivedAt;
         asset.UpdatedAt = archivedAt;
 
-        await _assetRepository.SaveChangesAsync();
+        var wasSaved = await _assetRepository.SaveChangesAsync();
 
-        return NoContent();
+        if (!wasSaved)
+        {
+            return Problem(
+                detail: "De asset kon niet worden gearchiveerd.");
+        }
+
+        var archivedAssetDto =
+            _mapper.Map<AssetDetailDto>(asset);
+
+        return Ok(archivedAssetDto);
     }
 
     [HttpPatch("{id:guid}/restore")]
-    public async Task<IActionResult> RestoreAsset(Guid id)
+    public async Task<ActionResult<AssetDetailDto>> RestoreAsset(Guid id)
     {
         var userIdValue =
             User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -182,15 +201,27 @@ public class AssetsController : ControllerBase
 
         if (asset.Status != ItemStatus.Archived)
         {
-            return NoContent();
+            var alreadyRestoredDto =
+                _mapper.Map<AssetDetailDto>(asset);
+
+            return Ok(alreadyRestoredDto);
         }
 
         asset.Status = ItemStatus.Active;
         asset.ArchivedAt = null;
         asset.UpdatedAt = DateTimeOffset.UtcNow;
 
-        await _assetRepository.SaveChangesAsync();
+        var wasSaved = await _assetRepository.SaveChangesAsync();
 
-        return NoContent();
+        if (!wasSaved)
+        {
+            return Problem(
+                detail: "De asset kon niet worden hersteld.");
+        }
+
+        var restoredAssetDto =
+            _mapper.Map<AssetDetailDto>(asset);
+
+        return Ok(restoredAssetDto);
     }
 }
