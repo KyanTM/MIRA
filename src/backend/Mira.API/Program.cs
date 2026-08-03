@@ -89,6 +89,10 @@ builder.Services.AddControllersWithViews(options =>
 
 builder.Services.AddScoped<IAssetRepository, AssetRepository>();
 
+builder.Services.AddScoped<ISubscriptionRepository, SubscriptionRepository>();
+
+builder.Services.AddScoped<IContractRepository, ContractRepository>();
+
 builder.Services.AddAutoMapper(configuration =>
 {
     var licenseKey = builder.Configuration["AutoMapperKey"];

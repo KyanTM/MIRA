@@ -1,4 +1,4 @@
-namespace Mira.Contracts.Models
+namespace Mira.Contracts.Models.Asset
 {
     public sealed record AssetSummaryDto(
         Guid Id,

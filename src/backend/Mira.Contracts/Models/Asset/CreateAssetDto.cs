@@ -1,8 +1,8 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Mira.Contracts.Models
+namespace Mira.Contracts.Models.Asset
 {
-    public sealed class UpdateAssetDto
+    public sealed class CreateAssetDto
     {
         [Required]
         [MaxLength(200)]
