@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Mira.Infrastructure.DbContexts;
 
@@ -11,9 +12,11 @@ using Mira.Infrastructure.DbContexts;
 namespace Mira.Infrastructure.Migrations
 {
     [DbContext(typeof(MiraContext))]
-    partial class MiraContextModelSnapshot : ModelSnapshot
+    [Migration("20260804141641_AddDocumentAndDateConstraints")]
+    partial class AddDocumentAndDateConstraints
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

@@ -110,6 +110,9 @@ public class MiraContext(DbContextOptions<MiraContext> options) : IdentityDbCont
         modelBuilder.Entity<Item>().HasIndex(item => new { item.UserId, item.Status });
         modelBuilder.Entity<Asset>().HasIndex(asset => asset.SerialNumber);
         modelBuilder.Entity<Document>().HasIndex(document => document.Checksum);
+        modelBuilder.Entity<Document>()
+            .HasIndex(document => document.StorageKey)
+            .IsUnique();
         modelBuilder.Entity<Document>().HasIndex(document => document.ExpiresOn);
         modelBuilder.Entity<Warranty>().HasIndex(warranty => warranty.EndsOn);
         modelBuilder.Entity<Contract>().HasIndex(contract => contract.EndsOn);
@@ -137,9 +140,14 @@ public class MiraContext(DbContextOptions<MiraContext> options) : IdentityDbCont
 
         modelBuilder.Entity<Document>()
             .ToTable("Documents", table =>
+            {
                 table.HasCheckConstraint(
                     "CK_Documents_FileSizeBytes_Positive",
-                    "[FileSizeBytes] > 0"));
+                    "[FileSizeBytes] > 0");
+                table.HasCheckConstraint(
+                    "CK_Documents_DateRange",
+                    "[IssuedOn] IS NULL OR [ExpiresOn] IS NULL OR [ExpiresOn] >= [IssuedOn]");
+            });
 
         modelBuilder.Entity<Warranty>()
             .ToTable("Warranties", table =>
@@ -159,6 +167,9 @@ public class MiraContext(DbContextOptions<MiraContext> options) : IdentityDbCont
                 table.HasCheckConstraint(
                     "CK_Contracts_RenewalPeriodMonths_Positive",
                     "[RenewalPeriodMonths] IS NULL OR [RenewalPeriodMonths] > 0");
+                table.HasCheckConstraint(
+                    "CK_Contracts_DateRange",
+                    "[EndsOn] IS NULL OR [EndsOn] >= [StartsOn]");
             });
 
         modelBuilder.Entity<Subscription>()
@@ -170,6 +181,9 @@ public class MiraContext(DbContextOptions<MiraContext> options) : IdentityDbCont
                 table.HasCheckConstraint(
                     "CK_Subscriptions_CancellationNoticeDays_NonNegative",
                     "[CancellationNoticeDays] IS NULL OR [CancellationNoticeDays] >= 0");
+                table.HasCheckConstraint(
+                    "CK_Subscriptions_DateRange",
+                    "[StartDate] IS NULL OR [EndDate] IS NULL OR [EndDate] >= [StartDate]");
             });
 
         modelBuilder.Entity<ItemDocument>()
