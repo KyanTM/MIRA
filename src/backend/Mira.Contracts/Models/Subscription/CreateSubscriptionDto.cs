@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Mira.Contracts.Models.Subscription;
 
-public sealed class CreateSubscriptionDto
+public sealed class CreateSubscriptionDto : IValidatableObject
 {
     [Required]
     [MaxLength(200)]
@@ -50,4 +50,15 @@ public sealed class CreateSubscriptionDto
     public string? Notes { get; set; }
 
     public Guid? ContractId { get; set; }
+
+    public IEnumerable<ValidationResult> Validate(
+        ValidationContext validationContext)
+    {
+        if (StartDate.HasValue && EndDate < StartDate)
+        {
+            yield return new ValidationResult(
+                "EndDate mag niet vóór StartDate liggen.",
+                [nameof(EndDate)]);
+        }
+    }
 }

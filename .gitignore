@@ -26,6 +26,9 @@ yarn-error.log*
 appsettings.Local.json
 appsettings.*.Local.json
 
+# Private document storage (development only)
+src/backend/Mira.API/App_Data/
+
 # Operating system files
 .DS_Store
 Thumbs.db

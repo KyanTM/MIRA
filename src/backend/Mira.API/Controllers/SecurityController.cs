@@ -6,6 +6,7 @@ namespace Mira.API.Controllers
 {
     [ApiController]
     [Route("api/security")]
+    [ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]
     public sealed class SecurityController(IAntiforgery antiforgery) : ControllerBase
     {
         [AllowAnonymous]

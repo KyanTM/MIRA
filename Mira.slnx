@@ -6,4 +6,7 @@
     <Project Path="src/backend/Mira.Infrastructure/Mira.Infrastructure.csproj" />
     <Project Path="src/backend/Mira.Shared/Mira.Shared.csproj" />
   </Folder>
+  <Folder Name="/Tests/">
+    <Project Path="tests/Mira.API.Tests/Mira.API.Tests.csproj" />
+  </Folder>
 </Solution>

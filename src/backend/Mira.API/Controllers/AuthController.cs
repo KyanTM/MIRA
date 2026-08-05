@@ -3,13 +3,13 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Mira.Contracts.Authentication;
 using Mira.Infrastructure.Identity;
-using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace Mira.API.Controllers
 {
 
     [ApiController]
     [Route("api/auth")]
+    [ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]
     public sealed class AuthController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager) : ControllerBase
     {
 
