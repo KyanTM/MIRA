@@ -79,12 +79,30 @@
         Aangemeld blijven
       </label>
 
+
+      @if (serverError()) {
+  <p role="alert" class="text-sm text-red-700">
+    {{ serverError() }}
+  </p>
+}
+
+@if (successMessage()) {
+  <p role="status" class="text-sm text-green-800">
+    {{ successMessage() }}
+  </p>
+}
+      
       <button
-        type="submit"
-        class="w-full rounded-lg bg-blue-700 px-4 py-2.5 font-medium text-white transition hover:bg-blue-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-700"
-      >
-        Aanmelden
-      </button>
+  type="submit"
+  [disabled]="isSubmitting()"
+  class="w-full rounded-lg bg-blue-700 px-4 py-2.5 font-medium text-white transition hover:bg-blue-800 disabled:cursor-not-allowed disabled:opacity-60"
+>
+  @if (isSubmitting()) {
+    Bezig met aanmelden...
+  } @else {
+    Aanmelden
+  }
+</button>
     </form>
   </section>
 </main>
