@@ -12,3 +12,8 @@ export interface AuthenticatedUser {
 export interface AntiforgeryResponse {
     token: string;
 }
+
+export interface RegisterRequest {
+    email: string;
+    password: string;
+}

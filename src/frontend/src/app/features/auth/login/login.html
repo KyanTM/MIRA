@@ -1,25 +1,17 @@
-<main class="min-h-screen bg-blue-300 flex items-center justify-center ">
+<main class="min-h-screen bg-blue-300 flex items-center justify-center">
   <section class="mx-auto max-w-md">
     <header class="mb-8">
-      <h1 class="text-3xl font-semibold tracking-tight text-slate-950">
-        Aanmelden bij MIRA
-      </h1>
+      <h1 class="text-3xl font-semibold tracking-tight text-slate-950">Aanmelden bij</h1>
+      <img src="images/mira_logo_vault.svg" alt="Mira logo" class="bg-blue-200 rounded-lg py-2 my-2 border-blue-600" />
 
       <p class="mt-2 text-base text-slate-600">
         Beheer je belangrijke documenten en gegevens op één plaats.
       </p>
     </header>
 
-    <form
-      [formGroup]="loginForm"
-      (ngSubmit)="onSubmit()"
-      class="space-y-5"
-      novalidate
-    >
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="space-y-5" novalidate>
       <div>
-        <label for="email" class="block text-sm font-medium text-slate-800">
-          E-mailadres
-        </label>
+        <label for="email" class="block text-sm font-medium text-slate-800"> E-mailadres </label>
 
         <input
           id="email"
@@ -29,27 +21,17 @@
           class="mt-2 block w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-slate-950 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
         />
 
-        @if (
-          loginForm.controls.email.touched &&
-          loginForm.controls.email.hasError('required')
-        ) {
-          <p class="mt-1.5 text-sm text-red-700">
-            Vul je e-mailadres in.
-          </p>
+        @if (loginForm.controls.email.touched && loginForm.controls.email.hasError('required')) {
+          <p class="mt-1.5 text-sm text-red-700">Vul je e-mailadres in.</p>
         } @else if (
-          loginForm.controls.email.touched &&
-          loginForm.controls.email.hasError('email')
+          loginForm.controls.email.touched && loginForm.controls.email.hasError('email')
         ) {
-          <p class="mt-1.5 text-sm text-red-700">
-            Vul een geldig e-mailadres in.
-          </p>
+          <p class="mt-1.5 text-sm text-red-700">Vul een geldig e-mailadres in.</p>
         }
       </div>
 
       <div>
-        <label for="password" class="block text-sm font-medium text-slate-800">
-          Wachtwoord
-        </label>
+        <label for="password" class="block text-sm font-medium text-slate-800"> Wachtwoord </label>
 
         <input
           id="password"
@@ -60,12 +42,9 @@
         />
 
         @if (
-          loginForm.controls.password.touched &&
-          loginForm.controls.password.hasError('required')
+          loginForm.controls.password.touched && loginForm.controls.password.hasError('required')
         ) {
-          <p class="mt-1.5 text-sm text-red-700">
-            Vul je wachtwoord in.
-          </p>
+          <p class="mt-1.5 text-sm text-red-700">Vul je wachtwoord in.</p>
         }
       </div>
 
@@ -79,30 +58,29 @@
         Aangemeld blijven
       </label>
 
-
       @if (serverError()) {
-  <p role="alert" class="text-sm text-red-700">
-    {{ serverError() }}
-  </p>
-}
+        <p role="alert" class="text-sm text-red-700">
+          {{ serverError() }}
+        </p>
+      }
 
-@if (successMessage()) {
-  <p role="status" class="text-sm text-green-800">
-    {{ successMessage() }}
-  </p>
-}
-      
+      @if (successMessage()) {
+        <p role="status" class="text-sm text-green-800">
+          {{ successMessage() }}
+        </p>
+      }
+
       <button
-  type="submit"
-  [disabled]="isSubmitting()"
-  class="w-full rounded-lg bg-blue-700 px-4 py-2.5 font-medium text-white transition hover:bg-blue-800 disabled:cursor-not-allowed disabled:opacity-60"
->
-  @if (isSubmitting()) {
-    Bezig met aanmelden...
-  } @else {
-    Aanmelden
-  }
-</button>
+        type="submit"
+        [disabled]="isSubmitting()"
+        class="w-full rounded-lg bg-blue-700 px-4 py-2.5 font-medium text-white transition hover:bg-blue-800 disabled:cursor-not-allowed disabled:opacity-60"
+      >
+        @if (isSubmitting()) {
+          Bezig met aanmelden...
+        } @else {
+          Aanmelden
+        }
+      </button>
     </form>
   </section>
 </main>
