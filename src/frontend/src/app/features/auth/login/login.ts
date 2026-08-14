@@ -7,12 +7,13 @@ import {
   Validators,
 } from '@angular/forms';
 import { finalize } from 'rxjs';
+import { RouterLink } from '@angular/router';
 
 import { AuthService } from '../../../core/auth/service';
 
 @Component({
   selector: 'app-login',
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, RouterLink],
   templateUrl: './login.html',
   styleUrl: './login.css',
 })
