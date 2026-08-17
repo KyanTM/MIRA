@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { inject, Injectable } from '@angular/core';
+import { inject, Injectable, signal } from '@angular/core';
 import { map, Observable, switchMap, tap } from 'rxjs';
 
 import { AntiforgeryResponse, AuthenticatedUser, LoginRequest, RegisterRequest } from './models';
@@ -10,6 +10,10 @@ export class AuthService {
   private readonly apiUrl = 'https://localhost:7082/api';
 
   private antiforgeryToken: string | null = null;
+
+  private readonly _currentUser = signal<AuthenticatedUser | null>(null);
+
+  readonly currentUser = this._currentUser.asReadonly();
 
   login(request: LoginRequest): Observable<AuthenticatedUser> {
     return this.refreshAntiforgeryToken().pipe(
@@ -22,6 +26,8 @@ export class AuthService {
         }),
       ),
       switchMap((user) => this.refreshAntiforgeryToken().pipe(map(() => user))),
+
+      tap((user) => this._currentUser.set(user)),
     );
   }
 
@@ -50,6 +56,20 @@ export class AuthService {
       ),
 
       switchMap((user) => this.refreshAntiforgeryToken().pipe(map(() => user))),
+
+      tap((user) => this._currentUser.set(user)),
     );
+  }
+
+  loadCurrentUser(): Observable<AuthenticatedUser> {
+    return this.http
+      .get<AuthenticatedUser>(`${this.apiUrl}/auth/me`, {
+        withCredentials: true,
+      })
+      .pipe(
+        tap((user) => {
+          this._currentUser.set(user);
+        }),
+      );
   }
 }

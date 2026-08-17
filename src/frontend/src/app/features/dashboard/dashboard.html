@@ -1,0 +1,21 @@
+<main class="min-h-screen bg-blue-300 px-6 py-10">
+  <section>
+    @if (isLoading()) {
+      <p>Aan het laden...</p>
+    } @else if (loadError()) {
+      <p role="alert" class="text-red-700">
+        {{ loadError() }}
+      </p>
+    } @else if (currentUser(); as user) {
+      <header>
+        <h1 class="text-3xl font-semibold text-slate-950">
+          Welkom bij MIRA
+        </h1>
+
+        <p class="mt-2 text-slate-700">
+          Je bent aangemeld als {{ user.email }}.
+        </p>
+      </header>
+    }
+  </section>
+</main>
