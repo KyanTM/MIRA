@@ -17,10 +17,3 @@ export interface RegisterRequest {
     email: string;
     password: string;
 }
-
-export interface ValidationProblemDetails {
-  title?: string;
-  status?: number;
-  traceId?: string;
-  errors?: Record<string, string[]>;
-}

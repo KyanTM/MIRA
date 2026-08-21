@@ -72,4 +72,22 @@ export class AuthService {
         }),
       );
   }
+
+  logout(): Observable<void> {
+    return this.refreshAntiforgeryToken().pipe(
+      switchMap((token) =>
+        this.http.post<void>(`${this.apiUrl}/auth/logout`, null, {
+          withCredentials: true,
+          headers: {
+            'X-XSRF-TOKEN': token,
+          },
+        }),
+      ),
+
+      tap(()=> {
+        this._currentUser.set(null);
+        this.antiforgeryToken = null;
+      })
+    );
+  }
 }

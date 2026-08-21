@@ -1,5 +1,5 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { finalize } from 'rxjs';
 
@@ -11,35 +11,42 @@ import { AuthService } from '../../core/auth/service';
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css',
 })
-export class Dashboard implements OnInit {
+export class Dashboard {
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
 
   readonly currentUser = this.authService.currentUser;
-  readonly isLoading = signal(true);
-  readonly loadError = signal<string | null>(null);
 
-  ngOnInit(): void {
-    if (this.currentUser()) {
-      this.isLoading.set(false);
+  readonly isLoggingOut = signal(false);
+  readonly logoutError = signal<string | null>(null);
+
+  onLogout(): void {
+    if (this.isLoggingOut()) {
       return;
     }
 
+    this.logoutError.set(null);
+    this.isLoggingOut.set(true);
+
     this.authService
-      .loadCurrentUser()
+      .logout()
       .pipe(
         finalize(() => {
-          this.isLoading.set(false);
+          this.isLoggingOut.set(false);
         }),
       )
       .subscribe({
+        next: () => {
+          void this.router.navigateByUrl('/login');
+        },
+
         error: (error: HttpErrorResponse) => {
-          if (error.status === 401) {
-            void this.router.navigateByUrl('/login');
+          if (error.status === 0) {
+            this.logoutError.set('De backend is niet bereikbaar. Afmelden is niet voltooid.');
             return;
           }
 
-          this.loadError.set('Je gegevens konden niet geladen worden.');
+          this.logoutError.set('Afmelden is mislukt. Probeer het opnieuw.');
         },
       });
   }

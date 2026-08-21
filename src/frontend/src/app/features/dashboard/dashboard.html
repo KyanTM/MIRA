@@ -1,20 +1,29 @@
 <main class="min-h-screen bg-blue-300 px-6 py-10">
   <section>
-    @if (isLoading()) {
-      <p>Aan het laden...</p>
-    } @else if (loadError()) {
-      <p role="alert" class="text-red-700">
-        {{ loadError() }}
-      </p>
-    } @else if (currentUser(); as user) {
+    @if (currentUser(); as user) {
       <header>
-        <h1 class="text-3xl font-semibold text-slate-950">
-          Welkom bij MIRA
-        </h1>
+        <h1 class="text-3xl font-semibold text-slate-950">Welkom bij MIRA</h1>
 
-        <p class="mt-2 text-slate-700">
-          Je bent aangemeld als {{ user.email }}.
-        </p>
+        <p class="mt-2 text-slate-700">Je bent aangemeld als {{ user.email }}.</p>
+
+        <button
+          type="button"
+          (click)="onLogout()"
+          [disabled]="isLoggingOut()"
+          class="mt-6 rounded-lg bg-blue-700 px-4 py-2.5 font-medium text-white disabled:cursor-not-allowed disabled:opacity-60"
+        >
+          @if (isLoggingOut()) {
+            Bezig met afmelden...
+          } @else {
+            Afmelden
+          }
+        </button>
+
+        @if (logoutError()) {
+          <p role="alert" class="mt-3 text-sm text-red-700">
+            {{ logoutError() }}
+          </p>
+        }
       </header>
     }
   </section>
