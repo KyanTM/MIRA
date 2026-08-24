@@ -1,71 +1,55 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable, signal } from '@angular/core';
-import { map, Observable, switchMap, tap } from 'rxjs';
+import { Observable, tap } from 'rxjs';
 
-import { AntiforgeryResponse, AuthenticatedUser, LoginRequest, RegisterRequest } from './models';
+import { environment } from '../../../environments/environment';
+import {
+  AuthenticatedUser,
+  LoginRequest,
+  RegisterRequest,
+} from './models';
 
-@Injectable({ providedIn: 'root' })
+@Injectable({
+  providedIn: 'root',
+})
 export class AuthService {
   private readonly http = inject(HttpClient);
-  private readonly apiUrl = 'https://localhost:7082/api';
+  private readonly apiUrl = environment.apiUrl;
 
-  private antiforgeryToken: string | null = null;
-
-  private readonly _currentUser = signal<AuthenticatedUser | null>(null);
+  private readonly _currentUser =
+    signal<AuthenticatedUser | null>(null);
 
   readonly currentUser = this._currentUser.asReadonly();
 
   login(request: LoginRequest): Observable<AuthenticatedUser> {
-    return this.refreshAntiforgeryToken().pipe(
-      switchMap((token) =>
-        this.http.post<AuthenticatedUser>(`${this.apiUrl}/auth/login`, request, {
-          withCredentials: true,
-          headers: {
-            'X-XSRF-TOKEN': token,
-          },
-        }),
-      ),
-      switchMap((user) => this.refreshAntiforgeryToken().pipe(map(() => user))),
-
-      tap((user) => this._currentUser.set(user)),
-    );
-  }
-
-  private refreshAntiforgeryToken(): Observable<string> {
     return this.http
-      .get<AntiforgeryResponse>(`${this.apiUrl}/security/antiforgery`, {
-        withCredentials: true,
-      })
+      .post<AuthenticatedUser>(
+        `${this.apiUrl}/auth/login`,
+        request,
+      )
       .pipe(
-        map((response) => response.token),
-        tap((token) => {
-          this.antiforgeryToken = token;
+        tap((user) => {
+          this._currentUser.set(user);
         }),
       );
   }
 
   register(request: RegisterRequest): Observable<AuthenticatedUser> {
-    return this.refreshAntiforgeryToken().pipe(
-      switchMap((token) =>
-        this.http.post<AuthenticatedUser>(`${this.apiUrl}/auth/register`, request, {
-          withCredentials: true,
-          headers: {
-            'X-XSRF-TOKEN': token,
-          },
+    return this.http
+      .post<AuthenticatedUser>(
+        `${this.apiUrl}/auth/register`,
+        request,
+      )
+      .pipe(
+        tap((user) => {
+          this._currentUser.set(user);
         }),
-      ),
-
-      switchMap((user) => this.refreshAntiforgeryToken().pipe(map(() => user))),
-
-      tap((user) => this._currentUser.set(user)),
-    );
+      );
   }
 
   loadCurrentUser(): Observable<AuthenticatedUser> {
     return this.http
-      .get<AuthenticatedUser>(`${this.apiUrl}/auth/me`, {
-        withCredentials: true,
-      })
+      .get<AuthenticatedUser>(`${this.apiUrl}/auth/me`)
       .pipe(
         tap((user) => {
           this._currentUser.set(user);
@@ -74,20 +58,12 @@ export class AuthService {
   }
 
   logout(): Observable<void> {
-    return this.refreshAntiforgeryToken().pipe(
-      switchMap((token) =>
-        this.http.post<void>(`${this.apiUrl}/auth/logout`, null, {
-          withCredentials: true,
-          headers: {
-            'X-XSRF-TOKEN': token,
-          },
+    return this.http
+      .post<void>(`${this.apiUrl}/auth/logout`, null)
+      .pipe(
+        tap(() => {
+          this._currentUser.set(null);
         }),
-      ),
-
-      tap(()=> {
-        this._currentUser.set(null);
-        this.antiforgeryToken = null;
-      })
-    );
+      );
   }
 }
