@@ -18,12 +18,11 @@ export class Login {
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
 
-
   readonly faEye = faEye;
   readonly faEyeSlash = faEyeSlash;
   readonly isSubmitting = signal(false);
   readonly serverError = signal<string | null>(null);
-  readonly passwordType = signal<"password" | "text">("password");
+  readonly passwordType = signal<'password' | 'text'>('password');
 
   readonly loginForm = new FormGroup({
     email: new FormControl('', {
@@ -80,7 +79,7 @@ export class Login {
       });
   }
 
-  public changePasswordType() : void {
-    this.passwordType.update((current) => current === "password" ? "text" : "password")
+  public changePasswordType(): void {
+    this.passwordType.update((current) => (current === 'password' ? 'text' : 'password'));
   }
 }

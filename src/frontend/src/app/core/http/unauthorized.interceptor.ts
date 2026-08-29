@@ -14,8 +14,7 @@ const EXPECTED_UNAUTHORIZED_ENDPOINTS = [
 
 export const unauthorizedInterceptor: HttpInterceptorFn = (request, next) => {
   const isApiRequest =
-    request.url === environment.apiUrl ||
-    request.url.startsWith(`${environment.apiUrl}/`);
+    request.url === environment.apiUrl || request.url.startsWith(`${environment.apiUrl}/`);
 
   if (!isApiRequest) {
     return next(request);

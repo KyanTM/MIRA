@@ -1,8 +1,5 @@
 import { provideHttpClient } from '@angular/common/http';
-import {
-  HttpTestingController,
-  provideHttpClientTesting,
-} from '@angular/common/http/testing';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { firstValueFrom } from 'rxjs';
 
@@ -29,9 +26,7 @@ describe('AntiforgeryService', () => {
   it('gets an antiforgery token with credentials', async () => {
     const resultPromise = firstValueFrom(antiforgeryService.getToken());
 
-    const request = httpTesting.expectOne(
-      `${environment.apiUrl}/security/antiforgery`,
-    );
+    const request = httpTesting.expectOne(`${environment.apiUrl}/security/antiforgery`);
     expect(request.request.method).toBe('GET');
     expect(request.request.withCredentials).toBe(true);
     request.flush({ token: 'test-antiforgery-token' });

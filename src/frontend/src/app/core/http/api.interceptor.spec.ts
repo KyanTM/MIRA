@@ -1,12 +1,5 @@
-import {
-  HttpClient,
-  provideHttpClient,
-  withInterceptors,
-} from '@angular/common/http';
-import {
-  HttpTestingController,
-  provideHttpClientTesting,
-} from '@angular/common/http/testing';
+import { HttpClient, provideHttpClient, withInterceptors } from '@angular/common/http';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { firstValueFrom } from 'rxjs';
 
@@ -34,9 +27,7 @@ describe('apiInterceptor', () => {
   });
 
   it('adds credentials but no antiforgery header to an API GET', async () => {
-    const resultPromise = firstValueFrom(
-      http.get<unknown[]>(`${environment.apiUrl}/assets`),
-    );
+    const resultPromise = firstValueFrom(http.get<unknown[]>(`${environment.apiUrl}/assets`));
 
     const request = httpTesting.expectOne(`${environment.apiUrl}/assets`);
     expect(request.request.withCredentials).toBe(true);
@@ -51,9 +42,7 @@ describe('apiInterceptor', () => {
       http.post(`${environment.apiUrl}/assets`, { name: 'Laptop' }),
     );
 
-    const tokenRequest = httpTesting.expectOne(
-      `${environment.apiUrl}/security/antiforgery`,
-    );
+    const tokenRequest = httpTesting.expectOne(`${environment.apiUrl}/security/antiforgery`);
     expect(tokenRequest.request.method).toBe('GET');
     expect(tokenRequest.request.withCredentials).toBe(true);
     tokenRequest.flush({ token: 'test-antiforgery-token' });
@@ -61,9 +50,7 @@ describe('apiInterceptor', () => {
     const apiRequest = httpTesting.expectOne(`${environment.apiUrl}/assets`);
     expect(apiRequest.request.method).toBe('POST');
     expect(apiRequest.request.withCredentials).toBe(true);
-    expect(apiRequest.request.headers.get('X-XSRF-TOKEN')).toBe(
-      'test-antiforgery-token',
-    );
+    expect(apiRequest.request.headers.get('X-XSRF-TOKEN')).toBe('test-antiforgery-token');
     apiRequest.flush({ id: 'asset-id', name: 'Laptop' });
 
     expect(await resultPromise).toEqual({ id: 'asset-id', name: 'Laptop' });

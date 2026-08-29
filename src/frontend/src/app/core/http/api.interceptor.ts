@@ -9,8 +9,7 @@ const METHODS_REQUIRING_ANTIFORGERY = ['POST', 'PUT', 'PATCH', 'DELETE'];
 
 export const apiInterceptor: HttpInterceptorFn = (request, next) => {
   const isApiRequest =
-    request.url === environment.apiUrl ||
-    request.url.startsWith(`${environment.apiUrl}/`);
+    request.url === environment.apiUrl || request.url.startsWith(`${environment.apiUrl}/`);
 
   if (!isApiRequest) {
     return next(request);
@@ -20,8 +19,9 @@ export const apiInterceptor: HttpInterceptorFn = (request, next) => {
     withCredentials: true,
   });
 
-  const requiresAntiforgeryToken =
-    METHODS_REQUIRING_ANTIFORGERY.includes(request.method.toUpperCase());
+  const requiresAntiforgeryToken = METHODS_REQUIRING_ANTIFORGERY.includes(
+    request.method.toUpperCase(),
+  );
 
   if (!requiresAntiforgeryToken) {
     return next(requestWithCredentials);

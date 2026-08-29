@@ -4,10 +4,7 @@ import {
   provideHttpClient,
   withInterceptors,
 } from '@angular/common/http';
-import {
-  HttpTestingController,
-  provideHttpClientTesting,
-} from '@angular/common/http/testing';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { provideRouter, Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
@@ -52,9 +49,7 @@ describe('unauthorizedInterceptor', () => {
     await authenticateUser();
     const navigateSpy = vi.spyOn(router, 'navigateByUrl').mockResolvedValue(true);
 
-    const resultPromise = firstValueFrom(
-      http.get(`${environment.apiUrl}/assets`),
-    );
+    const resultPromise = firstValueFrom(http.get(`${environment.apiUrl}/assets`));
     const rejection = expect(resultPromise).rejects.toBeInstanceOf(HttpErrorResponse);
 
     httpTesting.expectOne(`${environment.apiUrl}/assets`).flush(null, {

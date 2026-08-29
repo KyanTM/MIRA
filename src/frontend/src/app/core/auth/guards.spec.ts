@@ -64,9 +64,7 @@ describe('authentication guards', () => {
     const result = runGuard(authGuard);
 
     expect(isObservable(result)).toBe(true);
-    expect(
-      await firstValueFrom(result as Observable<boolean | UrlTree>),
-    ).toBe(true);
+    expect(await firstValueFrom(result as Observable<boolean | UrlTree>)).toBe(true);
     expect(loadCurrentUser).toHaveBeenCalledTimes(1);
   });
 
@@ -87,25 +85,18 @@ describe('authentication guards', () => {
   });
 
   it('allows a guest page when the session check fails', async () => {
-    loadCurrentUser.mockReturnValue(
-      throwError(() => new Error('Not authenticated')),
-    );
+    loadCurrentUser.mockReturnValue(throwError(() => new Error('Not authenticated')));
 
     const result = runGuard(guestGuard);
 
     expect(isObservable(result)).toBe(true);
-    expect(
-      await firstValueFrom(result as Observable<boolean | UrlTree>),
-    ).toBe(true);
+    expect(await firstValueFrom(result as Observable<boolean | UrlTree>)).toBe(true);
     expect(loadCurrentUser).toHaveBeenCalledTimes(1);
   });
 
   function runGuard(guard: typeof authGuard | typeof guestGuard) {
     return TestBed.runInInjectionContext(() =>
-      guard(
-        {} as ActivatedRouteSnapshot,
-        {} as RouterStateSnapshot,
-      ),
+      guard({} as ActivatedRouteSnapshot, {} as RouterStateSnapshot),
     );
   }
 });
