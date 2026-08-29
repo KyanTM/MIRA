@@ -1,10 +1,17 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable, signal } from '@angular/core';
-import { Observable, tap } from 'rxjs';
+import {
+  finalize,
+  Observable,
+  of,
+  shareReplay,
+  tap,
+} from 'rxjs';
 
 import { environment } from '../../../environments/environment';
 import {
   AuthenticatedUser,
+  AuthStatus,
   LoginRequest,
   RegisterRequest,
 } from './models';
@@ -19,7 +26,14 @@ export class AuthService {
   private readonly _currentUser =
     signal<AuthenticatedUser | null>(null);
 
+  private readonly _authStatus =
+    signal<AuthStatus>('checking');
+
+  private currentUserRequest$:
+    Observable<AuthenticatedUser> | null = null;
+
   readonly currentUser = this._currentUser.asReadonly();
+  readonly authStatus = this._authStatus.asReadonly();
 
   login(request: LoginRequest): Observable<AuthenticatedUser> {
     return this.http
@@ -29,7 +43,7 @@ export class AuthService {
       )
       .pipe(
         tap((user) => {
-          this._currentUser.set(user);
+          this.setAuthenticated(user);
         }),
       );
   }
@@ -42,19 +56,47 @@ export class AuthService {
       )
       .pipe(
         tap((user) => {
-          this._currentUser.set(user);
+          this.setAuthenticated(user);
         }),
       );
   }
 
   loadCurrentUser(): Observable<AuthenticatedUser> {
-    return this.http
+    const currentUser = this._currentUser();
+
+    if (
+      this._authStatus() === 'authenticated' &&
+      currentUser !== null
+    ) {
+      return of(currentUser);
+    }
+
+    if (this.currentUserRequest$ !== null) {
+      return this.currentUserRequest$;
+    }
+
+    this._authStatus.set('checking');
+
+    const request$ = this.http
       .get<AuthenticatedUser>(`${this.apiUrl}/auth/me`)
       .pipe(
         tap((user) => {
-          this._currentUser.set(user);
+          this.setAuthenticated(user);
+        }),
+
+        finalize(() => {
+          this.currentUserRequest$ = null;
+        }),
+
+        shareReplay({
+          bufferSize: 1,
+          refCount: false,
         }),
       );
+
+    this.currentUserRequest$ = request$;
+
+    return request$;
   }
 
   logout(): Observable<void> {
@@ -62,8 +104,18 @@ export class AuthService {
       .post<void>(`${this.apiUrl}/auth/logout`, null)
       .pipe(
         tap(() => {
-          this._currentUser.set(null);
+          this.markAnonymous();
         }),
       );
+  }
+
+  markAnonymous(): void {
+    this._currentUser.set(null);
+    this._authStatus.set('anonymous');
+  }
+
+  private setAuthenticated(user: AuthenticatedUser): void {
+    this._currentUser.set(user);
+    this._authStatus.set('authenticated');
   }
 }
