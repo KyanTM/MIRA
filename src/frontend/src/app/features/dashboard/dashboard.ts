@@ -1,52 +1,61 @@
-import { HttpErrorResponse } from '@angular/common/http';
-import { Component, inject, signal } from '@angular/core';
-import { Router } from '@angular/router';
+import { Component, computed, DestroyRef, inject, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { RouterLink } from '@angular/router';
 import { finalize } from 'rxjs';
 
-import { AuthService } from '../../core/auth/service';
+import { ErrorState } from '../../shared/ui/error-state/error-state';
+import { PageHeader } from '../../shared/ui/page-header/page-header';
+import { AttentionList } from './attention-list/attention-list';
+import { DashboardSummary } from './dashboard-summary/dashboard-summary';
+import { DashboardService } from './dashboard.service';
+import { DashboardResponse } from './models';
+import { RecentItems } from './recent-items/recent-items';
 
 @Component({
   selector: 'app-dashboard',
-  imports: [],
+  imports: [RouterLink, PageHeader, ErrorState, DashboardSummary, AttentionList, RecentItems],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css',
 })
 export class Dashboard {
-  private readonly authService = inject(AuthService);
-  private readonly router = inject(Router);
+  private readonly dashboardService = inject(DashboardService);
+  private readonly destroyRef = inject(DestroyRef);
 
-  readonly currentUser = this.authService.currentUser;
+  readonly dashboard = signal<DashboardResponse | null>(null);
+  readonly isLoading = signal(true);
+  readonly loadError = signal<string | null>(null);
+  readonly isEmptyArchive = computed(() => {
+    const counts = this.dashboard()?.counts;
 
-  readonly isLoggingOut = signal(false);
-  readonly logoutError = signal<string | null>(null);
+    return (
+      counts !== undefined &&
+      counts.assets === 0 &&
+      counts.documents === 0 &&
+      counts.warranties === 0 &&
+      counts.contracts === 0 &&
+      counts.subscriptions === 0
+    );
+  });
 
-  onLogout(): void {
-    if (this.isLoggingOut()) {
-      return;
-    }
+  constructor() {
+    this.loadDashboard();
+  }
 
-    this.logoutError.set(null);
-    this.isLoggingOut.set(true);
+  loadDashboard(): void {
+    this.isLoading.set(true);
+    this.loadError.set(null);
 
-    this.authService
-      .logout()
+    this.dashboardService
+      .getDashboard()
       .pipe(
-        finalize(() => {
-          this.isLoggingOut.set(false);
-        }),
+        takeUntilDestroyed(this.destroyRef),
+        finalize(() => this.isLoading.set(false)),
       )
       .subscribe({
-        next: () => {
-          void this.router.navigateByUrl('/login');
-        },
-
-        error: (error: HttpErrorResponse) => {
-          if (error.status === 0) {
-            this.logoutError.set('De backend is niet bereikbaar. Afmelden is niet voltooid.');
-            return;
-          }
-
-          this.logoutError.set('Afmelden is mislukt. Probeer het opnieuw.');
+        next: (dashboard) => this.dashboard.set(dashboard),
+        error: () => {
+          this.dashboard.set(null);
+          this.loadError.set('Controleer je verbinding en probeer het opnieuw.');
         },
       });
   }

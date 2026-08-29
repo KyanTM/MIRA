@@ -1,0 +1,36 @@
+<section class="attention panel" aria-labelledby="attention-heading">
+  <header class="section-header">
+    <div>
+      <h2 id="attention-heading">Aandacht nodig</h2>
+      <p>Verval-, opzeg- en betaaldatums die nu of binnenkort belangrijk zijn.</p>
+    </div>
+    <span>Tot en met {{ formatDate(attentionThrough()) }}</span>
+  </header>
+
+  @if (items().length > 0) {
+    <ul class="attention-items">
+      @for (item of items(); track item.itemId + item.eventType + item.dueOn) {
+        <li>
+          <div class="item-copy">
+            <strong>{{ item.itemName }}</strong>
+            <span>{{ eventLabel(item.eventType) }}</span>
+          </div>
+          <div class="date-copy" [attr.data-tone]="dateTone(item.dueOn)">
+            <strong>{{ relativeDate(item.dueOn) }}</strong>
+            <span>{{ formatDate(item.dueOn) }}</span>
+          </div>
+        </li>
+      }
+    </ul>
+  } @else {
+    <div class="attention-empty">
+      <span class="empty-icon" aria-hidden="true">
+        <fa-icon [icon]="emptyIcon"></fa-icon>
+      </span>
+      <div>
+        <h3>Geen aandachtspunten</h3>
+        <p>Er zijn in deze periode geen verval-, opzeg- of betaaldatums.</p>
+      </div>
+    </div>
+  }
+</section>

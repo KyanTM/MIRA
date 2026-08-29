@@ -1,0 +1,142 @@
+.attention {
+  overflow: hidden;
+}
+
+.section-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  border-bottom: 1px solid var(--mira-border);
+  padding: 1.25rem 1.35rem;
+}
+
+.section-header h2,
+.section-header p,
+.section-header > span,
+.attention-empty h3,
+.attention-empty p {
+  margin: 0;
+}
+
+.section-header h2 {
+  color: var(--mira-navy-950);
+  font-size: 1.05rem;
+}
+
+.section-header p {
+  margin-top: 0.3rem;
+  color: var(--mira-text-muted);
+  font-size: 0.825rem;
+}
+
+.section-header > span {
+  flex: 0 0 auto;
+  color: var(--mira-text-muted);
+  font-size: 0.75rem;
+  font-weight: 650;
+}
+
+.attention-items {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.attention-items li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 1.35rem;
+}
+
+.attention-items li + li {
+  border-top: 1px solid var(--mira-border);
+}
+
+.item-copy,
+.date-copy {
+  min-width: 0;
+}
+
+.item-copy strong,
+.item-copy span,
+.date-copy strong,
+.date-copy span {
+  display: block;
+}
+
+.item-copy strong {
+  overflow: hidden;
+  color: var(--mira-text);
+  font-size: 0.9rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.item-copy span,
+.date-copy span {
+  margin-top: 0.2rem;
+  color: var(--mira-text-muted);
+  font-size: 0.78rem;
+}
+
+.date-copy {
+  flex: 0 0 auto;
+  text-align: right;
+}
+
+.date-copy strong {
+  color: var(--mira-text-muted);
+  font-size: 0.8rem;
+}
+
+.date-copy[data-tone='overdue'] strong {
+  color: var(--mira-danger);
+}
+
+.date-copy[data-tone='soon'] strong {
+  color: var(--mira-warning);
+}
+
+.attention-empty {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  padding: 2rem 1.35rem;
+}
+
+.empty-icon {
+  display: grid;
+  width: 2.65rem;
+  height: 2.65rem;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--mira-success-bg);
+  color: var(--mira-success);
+}
+
+.attention-empty h3 {
+  color: var(--mira-navy-950);
+  font-size: 0.925rem;
+}
+
+.attention-empty p {
+  margin-top: 0.25rem;
+  color: var(--mira-text-muted);
+  font-size: 0.825rem;
+}
+
+@media (max-width: 560px) {
+  .section-header,
+  .attention-items li {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .date-copy {
+    text-align: left;
+  }
+}
