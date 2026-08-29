@@ -1,0 +1,36 @@
+.status-badge {
+  display: inline-flex;
+  width: fit-content;
+  align-items: center;
+  gap: 0.4rem;
+  border-radius: 999px;
+  background: #e9eef4;
+  color: #41556c;
+  padding: 0.28rem 0.6rem;
+  font-size: 0.75rem;
+  font-weight: 750;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.status-dot {
+  width: 0.42rem;
+  height: 0.42rem;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.status-badge[data-tone='success'] {
+  background: var(--mira-success-bg);
+  color: var(--mira-success);
+}
+
+.status-badge[data-tone='danger'] {
+  background: var(--mira-danger-bg);
+  color: var(--mira-danger);
+}
+
+.status-badge[data-tone='info'] {
+  background: var(--mira-info-bg);
+  color: var(--mira-info);
+}

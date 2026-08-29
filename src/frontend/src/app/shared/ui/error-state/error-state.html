@@ -1,0 +1,12 @@
+<section class="error-state" role="alert">
+  <span class="error-icon" aria-hidden="true">
+    <fa-icon [icon]="icon"></fa-icon>
+  </span>
+  <div>
+    <h2>{{ title() }}</h2>
+    <p>{{ message() }}</p>
+    <button type="button" class="button button--secondary" (click)="retry.emit()">
+      Opnieuw proberen
+    </button>
+  </div>
+</section>

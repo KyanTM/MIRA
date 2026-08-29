@@ -1,0 +1,57 @@
+<a class="skip-link" href="#main-content">Ga naar de hoofdinhoud</a>
+
+<div class="app-frame">
+  <aside class="sidebar" aria-label="Hoofdnavigatie">
+    <a class="brand" routerLink="/dashboard" aria-label="MIRA dashboard">
+      <img src="images/mira_logo_vault.svg" alt="MIRA" />
+    </a>
+
+    <nav class="primary-nav" aria-label="Primaire navigatie">
+      <a
+        routerLink="/dashboard"
+        routerLinkActive="nav-link--active"
+        [routerLinkActiveOptions]="{ exact: true }"
+        ariaCurrentWhenActive="page"
+        class="nav-link"
+      >
+        <fa-icon [icon]="dashboardIcon" aria-hidden="true"></fa-icon>
+        <span>Overzicht</span>
+      </a>
+
+      <a
+        routerLink="/assets"
+        routerLinkActive="nav-link--active"
+        ariaCurrentWhenActive="page"
+        class="nav-link"
+      >
+        <fa-icon [icon]="assetsIcon" aria-hidden="true"></fa-icon>
+        <span>Bezittingen</span>
+      </a>
+    </nav>
+
+    <div class="account-block">
+      <div class="account-copy">
+        <fa-icon [icon]="securityIcon" aria-hidden="true"></fa-icon>
+        <div>
+          <span>Veilige omgeving</span>
+          @if (currentUser(); as user) {
+            <strong title="{{ user.email }}">{{ user.email }}</strong>
+          }
+        </div>
+      </div>
+
+      <button type="button" class="logout-button" [disabled]="isLoggingOut()" (click)="onLogout()">
+        <fa-icon [icon]="logoutIcon" aria-hidden="true"></fa-icon>
+        <span>{{ isLoggingOut() ? 'Afmelden...' : 'Afmelden' }}</span>
+      </button>
+
+      @if (logoutError()) {
+        <p class="logout-error" role="alert">{{ logoutError() }}</p>
+      }
+    </div>
+  </aside>
+
+  <main id="main-content" class="main-content" tabindex="-1">
+    <router-outlet></router-outlet>
+  </main>
+</div>
