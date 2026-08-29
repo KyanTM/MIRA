@@ -1,0 +1,16 @@
+<div class="page-container form-page">
+  <app-page-header
+    title="Bezitting toevoegen"
+    description="Leg de belangrijkste gegevens van je bezitting vast. Je kunt die later altijd aanvullen."
+    backLink="/assets"
+    backLabel="Terug naar bezittingen"
+  />
+
+  <app-asset-form
+    submitLabel="Bezitting toevoegen"
+    cancelLink="/assets"
+    [isSubmitting]="isSubmitting()"
+    [serverError]="serverError()"
+    (submitted)="createAsset($event)"
+  />
+</div>
