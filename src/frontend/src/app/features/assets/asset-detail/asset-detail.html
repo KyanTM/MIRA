@@ -1,0 +1,242 @@
+<div class="page-container">
+  @if (isLoading()) {
+    <section class="detail-loading panel" aria-busy="true">
+      <span class="sr-only">Bezitting wordt geladen</span>
+      <span class="skeleton skeleton--title" aria-hidden="true"></span>
+      <span class="skeleton skeleton--copy" aria-hidden="true"></span>
+      <div class="skeleton-grid" aria-hidden="true">
+        @for (cell of [1, 2, 3, 4, 5, 6]; track cell) {
+          <span class="skeleton skeleton--field"></span>
+        }
+      </div>
+    </section>
+  } @else if (notFound()) {
+    <section class="not-found panel" role="alert">
+      <h1>Bezitting niet gevonden</h1>
+      <p>Deze bezitting bestaat niet, is niet beschikbaar of behoort niet tot jouw account.</p>
+      <a class="button button--secondary" routerLink="/assets">Terug naar bezittingen</a>
+    </section>
+  } @else if (loadError(); as message) {
+    <app-error-state title="Bezitting niet beschikbaar" [message]="message" (retry)="loadAsset()" />
+  } @else if (asset(); as currentAsset) {
+    <app-page-header
+      [title]="currentAsset.name"
+      description="Alle belangrijke gegevens van deze bezitting."
+      backLink="/assets"
+      backLabel="Terug naar bezittingen"
+    >
+      @if (currentAsset.status !== 'Archived') {
+        <a
+          page-actions
+          class="button button--secondary"
+          [routerLink]="['/assets', currentAsset.id, 'edit']"
+        >
+          <fa-icon [icon]="editIcon" aria-hidden="true"></fa-icon>
+          Bewerken
+        </a>
+      }
+    </app-page-header>
+
+    @if (successMessage(); as message) {
+      <p #successNotice class="notice notice--success" role="status" tabindex="-1">
+        {{ message }}
+      </p>
+    }
+
+    @if (actionError(); as message) {
+      <p class="notice notice--error" role="alert">{{ message }}</p>
+    }
+
+    @if (uploadWarning(); as message) {
+      <p class="notice notice--warning" role="alert">{{ message }}</p>
+    }
+
+    @if (currentAsset.status === 'Archived') {
+      <section class="archive-banner" aria-label="Gearchiveerde bezitting">
+        <div>
+          <strong>Deze bezitting is gearchiveerd</strong>
+          <p>Ze blijft bewaard, maar staat niet meer tussen je actieve bezittingen.</p>
+        </div>
+        <button
+          type="button"
+          class="button button--secondary"
+          [disabled]="isChangingArchiveStatus()"
+          (click)="restoreAsset()"
+        >
+          <fa-icon [icon]="restoreIcon" aria-hidden="true"></fa-icon>
+          {{ isChangingArchiveStatus() ? 'Herstellen…' : 'Bezitting herstellen' }}
+        </button>
+      </section>
+    }
+
+    <div class="detail-layout">
+      <div class="detail-content">
+        <app-asset-images
+          [assetId]="currentAsset.id"
+          [assetName]="currentAsset.name"
+          [isArchived]="currentAsset.status === 'Archived'"
+          (imageAdded)="uploadWarning.set(null)"
+        />
+
+        <section class="detail-section panel">
+          <div class="section-heading">
+            <h2>Algemeen</h2>
+            <app-status-badge [status]="currentAsset.status" />
+          </div>
+
+          <dl class="detail-grid">
+            <div>
+              <dt>Naam</dt>
+              <dd>{{ currentAsset.name }}</dd>
+            </div>
+            <div>
+              <dt>Locatie</dt>
+              <dd>{{ currentAsset.location || 'Niet ingevuld' }}</dd>
+            </div>
+            <div class="detail-grid__wide">
+              <dt>Beschrijving</dt>
+              <dd class="description">{{ currentAsset.description || 'Niet ingevuld' }}</dd>
+            </div>
+          </dl>
+        </section>
+
+        <section class="detail-section panel">
+          <h2>Identificatie</h2>
+          <dl class="detail-grid">
+            <div>
+              <dt>Merk</dt>
+              <dd>{{ currentAsset.brand || 'Niet ingevuld' }}</dd>
+            </div>
+            <div>
+              <dt>Model</dt>
+              <dd>{{ currentAsset.model || 'Niet ingevuld' }}</dd>
+            </div>
+            <div class="detail-grid__wide">
+              <dt>Serienummer</dt>
+              <dd class="serial-number">{{ currentAsset.serialNumber || 'Niet ingevuld' }}</dd>
+            </div>
+          </dl>
+        </section>
+
+        <section class="detail-section panel">
+          <h2>Aankoop en waarde</h2>
+          <dl class="detail-grid">
+            <div>
+              <dt>Aankoopdatum</dt>
+              <dd>
+                {{
+                  currentAsset.purchaseDate
+                    ? (currentAsset.purchaseDate | date: 'd MMMM y' : 'UTC')
+                    : 'Niet ingevuld'
+                }}
+              </dd>
+            </div>
+            <div>
+              <dt>Verkoper</dt>
+              <dd>{{ currentAsset.seller || 'Niet ingevuld' }}</dd>
+            </div>
+            <div>
+              <dt>Aankoopprijs</dt>
+              <dd>
+                {{
+                  currentAsset.purchasePrice !== null
+                    ? (currentAsset.purchasePrice | currency: 'EUR' : 'symbol' : '1.2-2')
+                    : 'Niet ingevuld'
+                }}
+              </dd>
+            </div>
+            <div>
+              <dt>Huidige waarde</dt>
+              <dd>
+                {{
+                  currentAsset.currentValue !== null
+                    ? (currentAsset.currentValue | currency: 'EUR' : 'symbol' : '1.2-2')
+                    : 'Niet ingevuld'
+                }}
+              </dd>
+            </div>
+          </dl>
+        </section>
+      </div>
+
+      <aside class="detail-sidebar" aria-label="Beheer en technische informatie">
+        <section class="meta-panel panel">
+          <h2>Informatie</h2>
+          <dl>
+            <div>
+              <dt>Toegevoegd</dt>
+              <dd>{{ currentAsset.createdAt | date: 'd MMM y, HH:mm' }}</dd>
+            </div>
+            <div>
+              <dt>Laatst gewijzigd</dt>
+              <dd>
+                {{
+                  currentAsset.updatedAt
+                    ? (currentAsset.updatedAt | date: 'd MMM y, HH:mm')
+                    : 'Nog niet gewijzigd'
+                }}
+              </dd>
+            </div>
+            @if (currentAsset.archivedAt) {
+              <div>
+                <dt>Gearchiveerd</dt>
+                <dd>{{ currentAsset.archivedAt | date: 'd MMM y, HH:mm' }}</dd>
+              </div>
+            }
+          </dl>
+        </section>
+
+        @if (currentAsset.status !== 'Archived') {
+          <section class="archive-panel panel">
+            <h2>Archiveren</h2>
+            <p>Verberg deze bezitting uit je actieve overzicht zonder gegevens te verwijderen.</p>
+
+            <button
+              #archiveTrigger
+              type="button"
+              class="button button--secondary"
+              aria-controls="archive-confirmation"
+              [attr.aria-expanded]="showArchiveConfirmation()"
+              (click)="showArchiveConfirmation.set(!showArchiveConfirmation())"
+            >
+              <fa-icon [icon]="archiveIcon" aria-hidden="true"></fa-icon>
+              Bezitting archiveren
+            </button>
+
+            @if (showArchiveConfirmation()) {
+              <div
+                id="archive-confirmation"
+                class="archive-confirmation"
+                role="group"
+                aria-labelledby="archive-confirmation-title"
+              >
+                <strong id="archive-confirmation-title">Bezitting archiveren?</strong>
+                <p>
+                  Deze bezitting verdwijnt uit je actieve overzicht. Je kunt ze later herstellen.
+                </p>
+                <div class="confirmation-actions">
+                  <button
+                    type="button"
+                    class="button button--danger"
+                    [disabled]="isChangingArchiveStatus()"
+                    (click)="archiveAsset()"
+                  >
+                    {{ isChangingArchiveStatus() ? 'Archiveren…' : 'Bezitting archiveren' }}
+                  </button>
+                  <button
+                    type="button"
+                    class="button button--quiet"
+                    [disabled]="isChangingArchiveStatus()"
+                    (click)="closeArchiveConfirmation()"
+                  >
+                    Niet archiveren
+                  </button>
+                </div>
+              </div>
+            }
+          </section>
+        }
+      </aside>
+    </div>
+  }
+</div>

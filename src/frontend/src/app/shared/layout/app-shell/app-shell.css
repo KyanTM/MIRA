@@ -1,0 +1,253 @@
+:host {
+  display: block;
+  min-height: 100vh;
+}
+
+.skip-link {
+  position: fixed;
+  z-index: 20;
+  top: 0.75rem;
+  left: 0.75rem;
+  transform: translateY(-160%);
+  border-radius: var(--mira-radius-sm);
+  background: var(--mira-navy-950);
+  color: #ffffff;
+  padding: 0.7rem 1rem;
+  font-weight: 700;
+  transition: transform var(--mira-transition);
+}
+
+.skip-link:focus {
+  transform: translateY(0);
+}
+
+.app-frame {
+  display: grid;
+  min-height: 100vh;
+  grid-template-columns: 250px minmax(0, 1fr);
+}
+
+.sidebar {
+  position: sticky;
+  top: 0;
+  display: flex;
+  height: 100vh;
+  flex-direction: column;
+  border-right: 1px solid var(--mira-border);
+  background: var(--mira-surface-subtle);
+  padding: 1.25rem 1rem;
+}
+
+.brand {
+  display: block;
+  border-radius: var(--mira-radius-sm);
+  padding: 0.45rem 0.5rem;
+}
+
+.brand img {
+  display: block;
+  width: 178px;
+  max-width: 100%;
+  height: auto;
+}
+
+.primary-nav {
+  display: grid;
+  gap: 0.3rem;
+  margin-top: 2rem;
+}
+
+.nav-link {
+  display: flex;
+  min-height: 44px;
+  align-items: center;
+  gap: 0.75rem;
+  border-radius: var(--mira-radius-sm);
+  color: #344b66;
+  padding: 0.7rem 0.8rem;
+  font-size: 0.9375rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition:
+    background-color var(--mira-transition),
+    color var(--mira-transition);
+}
+
+.nav-link:hover {
+  background: #e2eaf4;
+  color: var(--mira-navy-900);
+}
+
+.nav-link--active {
+  background: var(--mira-blue-100);
+  color: var(--mira-blue-800);
+}
+
+.nav-link fa-icon {
+  width: 1.1rem;
+  text-align: center;
+}
+
+.account-block {
+  margin-top: auto;
+  border-top: 1px solid var(--mira-border);
+  padding: 1rem 0.35rem 0;
+}
+
+.account-copy {
+  display: flex;
+  min-width: 0;
+  align-items: flex-start;
+  gap: 0.65rem;
+  color: var(--mira-text-muted);
+  font-size: 0.75rem;
+}
+
+.account-copy fa-icon {
+  margin-top: 0.1rem;
+  color: var(--mira-blue-700);
+}
+
+.account-copy div {
+  min-width: 0;
+}
+
+.account-copy span,
+.account-copy strong {
+  display: block;
+}
+
+.account-copy strong {
+  overflow: hidden;
+  margin-top: 0.15rem;
+  color: var(--mira-text);
+  font-size: 0.8125rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.logout-button {
+  display: flex;
+  width: 100%;
+  min-height: 42px;
+  align-items: center;
+  gap: 0.7rem;
+  margin-top: 0.85rem;
+  border: 0;
+  border-radius: var(--mira-radius-sm);
+  background: transparent;
+  color: var(--mira-text-muted);
+  padding: 0.65rem 0.7rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.logout-button:hover:not(:disabled) {
+  background: #e2eaf4;
+  color: var(--mira-danger);
+}
+
+.logout-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.logout-error {
+  margin: 0.65rem 0 0;
+  color: var(--mira-danger);
+  font-size: 0.75rem;
+}
+
+.main-content {
+  min-width: 0;
+  background: var(--mira-bg);
+}
+
+@media (max-width: 860px) {
+  .app-frame {
+    grid-template-columns: 1fr;
+  }
+
+  .sidebar {
+    z-index: 10;
+    display: grid;
+    height: auto;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 1rem;
+    border-right: 0;
+    border-bottom: 1px solid var(--mira-border);
+    padding: 0.65rem clamp(0.75rem, 3vw, 1.5rem);
+  }
+
+  .brand {
+    padding: 0.25rem;
+  }
+
+  .brand img {
+    width: 130px;
+  }
+
+  .primary-nav {
+    display: flex;
+    gap: 0.2rem;
+    margin: 0;
+  }
+
+  .nav-link {
+    padding-inline: 0.7rem;
+  }
+
+  .account-block {
+    margin: 0;
+    border: 0;
+    padding: 0;
+  }
+
+  .account-copy {
+    display: none;
+  }
+
+  .logout-button {
+    width: auto;
+    margin: 0;
+  }
+
+  .logout-error {
+    position: fixed;
+    z-index: 30;
+    right: 1rem;
+    bottom: 1rem;
+    max-width: min(22rem, calc(100vw - 2rem));
+    border: 1px solid #efb9bd;
+    border-radius: var(--mira-radius-sm);
+    margin: 0;
+    background: var(--mira-danger-bg);
+    padding: 0.75rem 0.9rem;
+    font-size: 0.8125rem;
+  }
+}
+
+@media (max-width: 620px) {
+  .sidebar {
+    grid-template-columns: 1fr auto;
+  }
+
+  .primary-nav {
+    grid-column: 1 / -1;
+    grid-row: 2;
+  }
+
+  .nav-link {
+    flex: 1;
+    justify-content: center;
+  }
+
+  .logout-button span {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+  }
+}

@@ -1,0 +1,277 @@
+<form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
+  @if (showValidationSummary() && (form.invalid || imageError())) {
+    <p class="validation-summary" role="alert">
+      Controleer de gemarkeerde velden. Het eerste ongeldige veld is geselecteerd.
+    </p>
+  }
+
+  <section class="form-section" aria-labelledby="basisgegevens-heading">
+    <div class="section-heading">
+      <h2 id="basisgegevens-heading">Basisgegevens</h2>
+      <p>Geef de bezitting een duidelijke naam en voeg eventueel extra context toe.</p>
+    </div>
+
+    <div class="form-grid form-grid--single">
+      <div class="field-group">
+        <label class="field-label" for="asset-name">Naam <span aria-hidden="true">*</span></label>
+        <input
+          id="asset-name"
+          class="field-control"
+          type="text"
+          formControlName="name"
+          required
+          autocomplete="off"
+          maxlength="200"
+          [attr.aria-invalid]="isInvalid(form.controls.name)"
+          [attr.aria-describedby]="isInvalid(form.controls.name) ? 'asset-name-error' : null"
+        />
+
+        @if (isInvalid(form.controls.name)) {
+          <p id="asset-name-error" class="field-error">
+            @if (
+              form.controls.name.hasError('required') || form.controls.name.hasError('whitespace')
+            ) {
+              Vul een naam in.
+            } @else {
+              Gebruik maximaal 200 tekens.
+            }
+          </p>
+        }
+      </div>
+
+      <div class="field-group">
+        <label class="field-label" for="asset-description">Beschrijving</label>
+        <textarea
+          id="asset-description"
+          class="field-control"
+          formControlName="description"
+          maxlength="2000"
+          [attr.aria-invalid]="isInvalid(form.controls.description)"
+          [attr.aria-describedby]="
+            isInvalid(form.controls.description)
+              ? 'asset-description-error'
+              : 'asset-description-hint'
+          "
+        ></textarea>
+        <p id="asset-description-hint" class="field-hint">
+          Bijvoorbeeld waarvoor je de bezitting gebruikt of wat je zeker wilt onthouden.
+        </p>
+        @if (isInvalid(form.controls.description)) {
+          <p id="asset-description-error" class="field-error">Gebruik maximaal 2.000 tekens.</p>
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="form-section" aria-labelledby="afbeelding-heading">
+    <div class="section-heading">
+      <h2 id="afbeelding-heading">Afbeelding</h2>
+      @if (asset()?.status === 'Archived') {
+        <p>Herstel deze bezitting eerst om een afbeelding toe te voegen.</p>
+      } @else if (asset()) {
+        <p>
+          Voeg optioneel een extra foto toe. Bestaande afbeeldingen beheer je op de detailpagina.
+        </p>
+      } @else {
+        <p>
+          Voeg optioneel een foto toe om je bezitting snel te herkennen. Later kun je er meer
+          toevoegen.
+        </p>
+      }
+    </div>
+
+    <app-image-picker
+      inputId="asset-image"
+      label="Afbeelding kiezen"
+      [disabled]="isSubmitting() || asset()?.status === 'Archived'"
+      (selectionChanged)="onImageSelected($event)"
+    />
+  </section>
+
+  <section class="form-section" aria-labelledby="identificatie-heading">
+    <div class="section-heading">
+      <h2 id="identificatie-heading">Identificatie</h2>
+      <p>Deze gegevens helpen je het juiste toestel of voorwerp later snel herkennen.</p>
+    </div>
+
+    <div class="form-grid">
+      <div class="field-group">
+        <label class="field-label" for="asset-brand">Merk</label>
+        <input
+          id="asset-brand"
+          class="field-control"
+          type="text"
+          formControlName="brand"
+          maxlength="100"
+          [attr.aria-invalid]="isInvalid(form.controls.brand)"
+          [attr.aria-describedby]="isInvalid(form.controls.brand) ? 'asset-brand-error' : null"
+        />
+        @if (isInvalid(form.controls.brand)) {
+          <p id="asset-brand-error" class="field-error">Gebruik maximaal 100 tekens.</p>
+        }
+      </div>
+
+      <div class="field-group">
+        <label class="field-label" for="asset-model">Model</label>
+        <input
+          id="asset-model"
+          class="field-control"
+          type="text"
+          formControlName="model"
+          maxlength="100"
+          [attr.aria-invalid]="isInvalid(form.controls.model)"
+          [attr.aria-describedby]="isInvalid(form.controls.model) ? 'asset-model-error' : null"
+        />
+        @if (isInvalid(form.controls.model)) {
+          <p id="asset-model-error" class="field-error">Gebruik maximaal 100 tekens.</p>
+        }
+      </div>
+
+      <div class="field-group form-grid__wide">
+        <label class="field-label" for="asset-serial-number">Serienummer</label>
+        <input
+          id="asset-serial-number"
+          class="field-control"
+          type="text"
+          formControlName="serialNumber"
+          maxlength="100"
+          autocomplete="off"
+          [attr.aria-invalid]="isInvalid(form.controls.serialNumber)"
+          [attr.aria-describedby]="
+            isInvalid(form.controls.serialNumber) ? 'asset-serial-number-error' : null
+          "
+        />
+        @if (isInvalid(form.controls.serialNumber)) {
+          <p id="asset-serial-number-error" class="field-error">Gebruik maximaal 100 tekens.</p>
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="form-section" aria-labelledby="aankoop-heading">
+    <div class="section-heading">
+      <h2 id="aankoop-heading">Aankoop</h2>
+      <p>Bewaar de belangrijkste aankoopgegevens voor facturen, garanties en waardebepaling.</p>
+    </div>
+
+    <div class="form-grid">
+      <div class="field-group">
+        <label class="field-label" for="asset-purchase-date">Aankoopdatum</label>
+        <input
+          id="asset-purchase-date"
+          class="field-control"
+          type="date"
+          formControlName="purchaseDate"
+        />
+      </div>
+
+      <div class="field-group">
+        <label class="field-label" for="asset-purchase-price">Aankoopprijs</label>
+        <div class="money-input">
+          <span aria-hidden="true">€</span>
+          <input
+            id="asset-purchase-price"
+            class="field-control"
+            type="number"
+            formControlName="purchasePrice"
+            min="0"
+            step="0.01"
+            inputmode="decimal"
+            [attr.aria-invalid]="isInvalid(form.controls.purchasePrice)"
+            [attr.aria-describedby]="
+              isInvalid(form.controls.purchasePrice) ? 'asset-purchase-price-error' : null
+            "
+          />
+        </div>
+        @if (isInvalid(form.controls.purchasePrice)) {
+          <p id="asset-purchase-price-error" class="field-error">
+            Vul een bedrag van 0 of hoger in.
+          </p>
+        }
+      </div>
+
+      <div class="field-group form-grid__wide">
+        <label class="field-label" for="asset-seller">Verkoper</label>
+        <input
+          id="asset-seller"
+          class="field-control"
+          type="text"
+          formControlName="seller"
+          maxlength="200"
+          [attr.aria-invalid]="isInvalid(form.controls.seller)"
+          [attr.aria-describedby]="isInvalid(form.controls.seller) ? 'asset-seller-error' : null"
+        />
+        @if (isInvalid(form.controls.seller)) {
+          <p id="asset-seller-error" class="field-error">Gebruik maximaal 200 tekens.</p>
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="form-section" aria-labelledby="bewaring-heading">
+    <div class="section-heading">
+      <h2 id="bewaring-heading">Bewaarlocatie en waarde</h2>
+      <p>Noteer waar de bezitting zich bevindt en wat ze momenteel ongeveer waard is.</p>
+    </div>
+
+    <div class="form-grid">
+      <div class="field-group">
+        <label class="field-label" for="asset-location">Locatie</label>
+        <input
+          id="asset-location"
+          class="field-control"
+          type="text"
+          formControlName="location"
+          maxlength="200"
+          [attr.aria-invalid]="isInvalid(form.controls.location)"
+          [attr.aria-describedby]="
+            isInvalid(form.controls.location) ? 'asset-location-error' : null
+          "
+        />
+        @if (isInvalid(form.controls.location)) {
+          <p id="asset-location-error" class="field-error">Gebruik maximaal 200 tekens.</p>
+        }
+      </div>
+
+      <div class="field-group">
+        <label class="field-label" for="asset-current-value">Huidige waarde</label>
+        <div class="money-input">
+          <span aria-hidden="true">€</span>
+          <input
+            id="asset-current-value"
+            class="field-control"
+            type="number"
+            formControlName="currentValue"
+            min="0"
+            step="0.01"
+            inputmode="decimal"
+            [attr.aria-invalid]="isInvalid(form.controls.currentValue)"
+            [attr.aria-describedby]="
+              isInvalid(form.controls.currentValue) ? 'asset-current-value-error' : null
+            "
+          />
+        </div>
+        @if (isInvalid(form.controls.currentValue)) {
+          <p id="asset-current-value-error" class="field-error">
+            Vul een bedrag van 0 of hoger in.
+          </p>
+        }
+      </div>
+    </div>
+  </section>
+
+  @if (serverError()) {
+    <p class="form-server-error" role="alert">{{ serverError() }}</p>
+  }
+
+  <div class="form-actions">
+    @if (isSubmitting()) {
+      <span class="button button--secondary" aria-disabled="true">Annuleren</span>
+    } @else {
+      <a class="button button--secondary" [routerLink]="cancelLink()">Annuleren</a>
+    }
+    <button type="submit" class="button button--primary" [disabled]="isSubmitting()">
+      {{ isSubmitting() ? 'Bezig met opslaan...' : submitLabel() }}
+    </button>
+  </div>
+</form>

@@ -1,0 +1,13 @@
+- main [ref=e4]:
+  - generic [ref=e5]:
+    - generic [ref=e6]:
+      - heading "Account aanmaken" [level=1] [ref=e7]
+      - paragraph [ref=e8]: Maak een account om je gegevens veilig in MIRA te bewaren
+    - generic [ref=e9]:
+      - generic [ref=e10]:
+        - text: E-mailadres
+        - textbox "E-mailadres" [ref=e11]
+      - generic [ref=e12]:
+        - text: Wachtwoord
+        - textbox "Wachtwoord" [ref=e13]
+        - paragraph [ref=e14]: Gebruik minimaal 12 tekens met hoofdletters, kleine letters, cijfers en speciale tekens.

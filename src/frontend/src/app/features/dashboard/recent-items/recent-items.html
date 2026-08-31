@@ -1,0 +1,26 @@
+<section class="recent panel" aria-labelledby="recent-heading">
+  <header class="section-header">
+    <h2 id="recent-heading">Recent toegevoegd</h2>
+    <p>De nieuwste gegevens in je archief.</p>
+  </header>
+
+  @if (items().length > 0) {
+    <ul>
+      @for (item of items(); track item.id) {
+        <li>
+          <div class="item-heading">
+            @if (item.itemType === 'Asset') {
+              <a [routerLink]="['/assets', item.id]">{{ item.name }}</a>
+            } @else {
+              <strong>{{ item.name }}</strong>
+            }
+            <app-status-badge [status]="item.status" />
+          </div>
+          <p>{{ typeLabel(item.itemType) }} · {{ item.createdAt | date: 'd MMM yyyy' }}</p>
+        </li>
+      }
+    </ul>
+  } @else {
+    <p class="recent-empty">Er zijn nog geen items aan je archief toegevoegd.</p>
+  }
+</section>

@@ -1,0 +1,20 @@
+<header class="page-header">
+  <div class="page-heading">
+    @if (backLink(); as link) {
+      <a class="back-link" [routerLink]="link">
+        <fa-icon [icon]="backIcon" aria-hidden="true"></fa-icon>
+        {{ backLabel() }}
+      </a>
+    }
+
+    <h1>{{ title() }}</h1>
+
+    @if (description(); as copy) {
+      <p>{{ copy }}</p>
+    }
+  </div>
+
+  <div class="page-actions">
+    <ng-content select="[page-actions]"></ng-content>
+  </div>
+</header>

@@ -1,0 +1,143 @@
+<div class="page-container">
+  <app-page-header
+    title="Bezittingen"
+    description="Bewaar aankoopgegevens, serienummers en gekoppelde administratie op één plaats."
+  >
+    <a page-actions class="button button--primary" routerLink="/assets/new">
+      <fa-icon [icon]="addIcon" aria-hidden="true"></fa-icon>
+      Bezitting toevoegen
+    </a>
+  </app-page-header>
+
+  <section class="asset-controls panel" aria-label="Bezittingen zoeken en filteren">
+    <label class="search-field" for="asset-search">
+      <span class="field-label">Zoeken in bezittingen</span>
+      <span class="search-input">
+        <fa-icon [icon]="searchIcon" aria-hidden="true"></fa-icon>
+        <input
+          #searchInput
+          id="asset-search"
+          type="search"
+          placeholder="Zoek op naam, merk, model of serienummer"
+          [value]="searchTerm()"
+          (input)="setSearchTerm(searchInput.value)"
+        />
+      </span>
+    </label>
+
+    <label class="archive-filter">
+      <input
+        #includeArchivedControl
+        type="checkbox"
+        [checked]="includeArchived()"
+        (change)="setIncludeArchived(includeArchivedControl.checked)"
+      />
+      <span>Gearchiveerde bezittingen tonen</span>
+    </label>
+  </section>
+
+  @if (isLoading()) {
+    <section class="asset-table panel" aria-label="Bezittingen laden" aria-busy="true">
+      <span class="sr-only">Bezittingen worden geladen</span>
+      @for (row of [1, 2, 3, 4]; track row) {
+        <div class="skeleton-row" aria-hidden="true">
+          <span class="skeleton skeleton--wide"></span>
+          <span class="skeleton"></span>
+          <span class="skeleton skeleton--short"></span>
+          <span class="skeleton"></span>
+        </div>
+      }
+    </section>
+  } @else if (loadError(); as message) {
+    <app-error-state
+      title="Bezittingen niet beschikbaar"
+      [message]="message"
+      (retry)="loadAssets()"
+    />
+  } @else if (assets().length === 0) {
+    <app-empty-state
+      title="Nog geen bezittingen"
+      description="Voeg je eerste bezitting toe om aankoopgegevens en documenten overzichtelijk te bewaren."
+      actionLabel="Eerste bezitting toevoegen"
+      actionLink="/assets/new"
+    />
+  } @else if (filteredAssets().length === 0) {
+    <section class="no-results panel" aria-live="polite">
+      <h2>Geen resultaten</h2>
+      <p>Geen bezittingen komen overeen met “{{ searchTerm() }}”. Probeer een andere zoekterm.</p>
+      <button type="button" class="button button--secondary" (click)="setSearchTerm('')">
+        Zoekopdracht wissen
+      </button>
+    </section>
+  } @else {
+    <p class="result-count" aria-live="polite">
+      @if (searchTerm().trim()) {
+        {{ filteredAssets().length }} van {{ assets().length }} bezittingen
+      } @else {
+        {{ filteredAssets().length }}
+        {{ filteredAssets().length === 1 ? 'bezitting' : 'bezittingen' }}
+      }
+    </p>
+
+    <div class="asset-table-wrap panel">
+      <table class="asset-table">
+        <caption class="sr-only">
+          Overzicht van je bezittingen
+        </caption>
+        <thead>
+          <tr>
+            <th id="asset-column-name" scope="col">Bezitting</th>
+            <th id="asset-column-date" scope="col">Aankoopdatum</th>
+            <th id="asset-column-price" scope="col">Aankoopprijs</th>
+            <th id="asset-column-status" scope="col">Status</th>
+            <th id="asset-column-open" scope="col"><span class="sr-only">Openen</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (asset of filteredAssets(); track asset.id) {
+            <tr>
+              <td headers="asset-column-name" data-label="Bezitting">
+                <a class="asset-name" [routerLink]="['/assets', asset.id]">{{ asset.name }}</a>
+                <span class="asset-meta">
+                  {{ asset.brand || 'Merk onbekend' }}
+                  @if (asset.model) {
+                    · {{ asset.model }}
+                  }
+                  @if (asset.serialNumber) {
+                    · {{ asset.serialNumber }}
+                  }
+                </span>
+              </td>
+              <td headers="asset-column-date" data-label="Aankoopdatum">
+                {{
+                  asset.purchaseDate
+                    ? (asset.purchaseDate | date: 'd MMM y' : 'UTC')
+                    : 'Niet ingevuld'
+                }}
+              </td>
+              <td headers="asset-column-price" data-label="Aankoopprijs">
+                {{
+                  asset.purchasePrice !== null
+                    ? (asset.purchasePrice | currency: 'EUR' : 'symbol' : '1.2-2')
+                    : 'Niet ingevuld'
+                }}
+              </td>
+              <td headers="asset-column-status" data-label="Status">
+                <app-status-badge [status]="asset.status" />
+              </td>
+              <td headers="asset-column-open" class="open-cell">
+                <a
+                  class="open-link"
+                  [routerLink]="['/assets', asset.id]"
+                  [attr.aria-label]="asset.name + ' openen'"
+                >
+                  Bekijken
+                </a>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>

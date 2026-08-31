@@ -1,0 +1,32 @@
+.error-state {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  border-radius: var(--mira-radius-md);
+  background: var(--mira-danger-bg);
+  padding: 1.25rem;
+  color: var(--mira-text);
+}
+
+.error-icon {
+  display: grid;
+  width: 2.5rem;
+  height: 2.5rem;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 50%;
+  background: #ffffff;
+  color: var(--mira-danger);
+}
+
+h2 {
+  margin: 0;
+  color: var(--mira-danger);
+  font-size: 1rem;
+}
+
+p {
+  margin: 0.3rem 0 0.9rem;
+  color: #6d3138;
+  font-size: 0.875rem;
+}
