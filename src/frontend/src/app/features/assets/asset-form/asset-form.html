@@ -1,5 +1,5 @@
 <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
-  @if (showValidationSummary() && form.invalid) {
+  @if (showValidationSummary() && (form.invalid || imageError())) {
     <p class="validation-summary" role="alert">
       Controleer de gemarkeerde velden. Het eerste ongeldige veld is geselecteerd.
     </p>
@@ -61,6 +61,31 @@
         }
       </div>
     </div>
+  </section>
+
+  <section class="form-section" aria-labelledby="afbeelding-heading">
+    <div class="section-heading">
+      <h2 id="afbeelding-heading">Afbeelding</h2>
+      @if (asset()?.status === 'Archived') {
+        <p>Herstel deze bezitting eerst om een afbeelding toe te voegen.</p>
+      } @else if (asset()) {
+        <p>
+          Voeg optioneel een extra foto toe. Bestaande afbeeldingen beheer je op de detailpagina.
+        </p>
+      } @else {
+        <p>
+          Voeg optioneel een foto toe om je bezitting snel te herkennen. Later kun je er meer
+          toevoegen.
+        </p>
+      }
+    </div>
+
+    <app-image-picker
+      inputId="asset-image"
+      label="Afbeelding kiezen"
+      [disabled]="isSubmitting() || asset()?.status === 'Archived'"
+      (selectionChanged)="onImageSelected($event)"
+    />
   </section>
 
   <section class="form-section" aria-labelledby="identificatie-heading">

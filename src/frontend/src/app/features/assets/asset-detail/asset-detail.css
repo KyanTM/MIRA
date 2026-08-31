@@ -19,6 +19,12 @@
   color: var(--mira-danger);
 }
 
+.notice--warning {
+  border-color: #d9bc72;
+  background: var(--mira-warning-bg);
+  color: var(--mira-warning);
+}
+
 .archive-banner {
   display: flex;
   align-items: center;

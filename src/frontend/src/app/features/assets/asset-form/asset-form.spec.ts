@@ -75,5 +75,57 @@ describe('AssetForm', () => {
     expect(fixture.nativeElement.querySelector('[aria-disabled="true"]')?.textContent).toContain(
       'Annuleren',
     );
+    expect(fixture.nativeElement.querySelector('#asset-image')?.disabled).toBe(true);
+  });
+
+  it('emits the selected image separately from the asset request', () => {
+    const file = new File(['photo'], 'laptop.png', { type: 'image/png' });
+    const selected = vi.fn();
+    const submitted = vi.fn();
+    component.imageSelected.subscribe(selected);
+    component.submitted.subscribe(submitted);
+    component.form.controls.name.setValue('Laptop');
+
+    component.onImageSelected({ file, error: null });
+    component.onSubmit();
+
+    expect(selected).toHaveBeenCalledWith(file);
+    expect(submitted).toHaveBeenCalledWith(expect.objectContaining({ name: 'Laptop' }));
+    expect(submitted.mock.calls[0][0]).not.toHaveProperty('file');
+    expect(component.imageError()).toBeNull();
+  });
+
+  it('blocks an invalid image and focuses its input when the other fields are valid', () => {
+    const submitted = vi.fn();
+    const selected = vi.fn();
+    component.submitted.subscribe(submitted);
+    component.imageSelected.subscribe(selected);
+    component.form.controls.name.setValue('Laptop');
+
+    component.onImageSelected({ file: null, error: 'Kies een PNG-, JPEG- of WebP-afbeelding.' });
+    component.onSubmit();
+    fixture.detectChanges();
+
+    expect(submitted).not.toHaveBeenCalled();
+    expect(selected).toHaveBeenCalledWith(null);
+    expect(component.showValidationSummary()).toBe(true);
+    expect(fixture.nativeElement.textContent).toContain('Controleer de gemarkeerde velden');
+    expect(document.activeElement?.id).toBe('asset-image');
+
+    component.onImageSelected({ file: null, error: null });
+    component.onSubmit();
+    fixture.detectChanges();
+
+    expect(submitted).toHaveBeenCalledTimes(1);
+    expect(component.imageError()).toBeNull();
+    expect(fixture.nativeElement.textContent).not.toContain('Controleer de gemarkeerde velden');
+  });
+
+  it('focuses the first invalid form field before an invalid image', () => {
+    component.onImageSelected({ file: null, error: 'Deze afbeelding is te groot.' });
+
+    component.onSubmit();
+
+    expect(document.activeElement?.id).toBe('asset-name');
   });
 });

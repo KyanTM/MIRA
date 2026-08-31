@@ -10,12 +10,14 @@ import { finalize } from 'rxjs';
 import { ErrorState } from '../../../shared/ui/error-state/error-state';
 import { PageHeader } from '../../../shared/ui/page-header/page-header';
 import { StatusBadge } from '../../../shared/ui/status-badge/status-badge';
+import { AssetImages } from '../asset-images/asset-images';
 import { AssetService } from '../data-access/asset.service';
 import { AssetDetail as AssetDetailModel } from '../models';
 
 @Component({
   selector: 'app-asset-detail',
   imports: [
+    AssetImages,
     CurrencyPipe,
     DatePipe,
     ErrorState,
@@ -42,7 +44,8 @@ export class AssetDetailPage {
   readonly isChangingArchiveStatus = signal(false);
   readonly loadError = signal<string | null>(null);
   readonly actionError = signal<string | null>(null);
-  readonly successMessage = signal<string | null>(this.readNavigationMessage());
+  readonly successMessage = signal<string | null>(this.readNavigationMessage('message'));
+  readonly uploadWarning = signal<string | null>(this.readNavigationMessage('warning'));
   readonly notFound = signal(false);
   readonly showArchiveConfirmation = signal(false);
   readonly archiveTrigger = viewChild<ElementRef<HTMLButtonElement>>('archiveTrigger');
@@ -150,8 +153,8 @@ export class AssetDetailPage {
     setTimeout(() => this.successNotice()?.nativeElement.focus());
   }
 
-  private readNavigationMessage(): string | null {
-    const message = this.router.getCurrentNavigation()?.extras.state?.['message'];
+  private readNavigationMessage(key: 'message' | 'warning'): string | null {
+    const message = this.router.getCurrentNavigation()?.extras.state?.[key];
     return typeof message === 'string' ? message : null;
   }
 

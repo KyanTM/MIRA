@@ -1,0 +1,186 @@
+<section class="image-section panel" aria-labelledby="asset-images-heading">
+  <div class="section-heading">
+    <h2 id="asset-images-heading">Afbeeldingen</h2>
+    <span class="image-count">{{ images().length }}</span>
+  </div>
+
+  @if (successMessage(); as message) {
+    <p #statusNotice class="image-notice image-notice--success" role="status" tabindex="-1">
+      {{ message }}
+    </p>
+  }
+  @if (actionError(); as message) {
+    <p class="image-notice image-notice--error" role="alert">{{ message }}</p>
+  }
+
+  @if (isLoading()) {
+    <div class="preview-skeleton" aria-busy="true">
+      <span class="sr-only">Afbeeldingen worden geladen</span>
+    </div>
+  } @else if (loadError(); as message) {
+    <div class="image-load-error" role="alert">
+      <p>{{ message }}</p>
+      <button type="button" class="button button--secondary" (click)="loadImages()">
+        Opnieuw laden
+      </button>
+    </div>
+  } @else {
+    @if (selectedImage(); as selected) {
+      <figure class="image-figure">
+        <div class="image-preview" [attr.aria-busy]="previewLoading()">
+          @if (previewLoading()) {
+            <span class="sr-only">Afbeelding wordt geladen</span>
+            <div class="preview-skeleton" aria-hidden="true"></div>
+          } @else if (previewUrl(); as url) {
+            @for (imageUrl of [url]; track imageUrl) {
+              <img
+                [src]="imageUrl"
+                [alt]="assetName() + ': ' + selected.name"
+                (error)="onPreviewError(imageUrl)"
+              />
+            }
+          } @else if (previewError()) {
+            <div class="preview-failed" role="status">
+              <p>Het voorbeeld kon niet worden geladen.</p>
+              <button type="button" class="button button--secondary" (click)="retryPreview()">
+                Voorbeeld opnieuw laden
+              </button>
+            </div>
+          }
+        </div>
+        <figcaption>
+          <span class="image-filename">{{ selected.originalFileName }}</span>
+          @if (selected.role === 'PrimaryImage') {
+            <span class="image-role">Hoofdafbeelding</span>
+          }
+          @if (selected.status === 'Archived') {
+            <span class="image-archived">Gearchiveerd document</span>
+          }
+        </figcaption>
+      </figure>
+
+      @if (images().length > 1) {
+        <ul class="image-choices" aria-label="Afbeelding kiezen">
+          @for (image of images(); track image.id; let index = $index) {
+            <li>
+              <button
+                type="button"
+                class="image-choice"
+                [class.image-choice--selected]="selected.id === image.id"
+                [attr.aria-pressed]="selected.id === image.id"
+                [attr.aria-label]="'Toon afbeelding ' + (index + 1) + ': ' + image.originalFileName"
+                [disabled]="isBusy()"
+                (click)="selectImage(image.id)"
+              >
+                {{ image.role === 'PrimaryImage' ? 'Hoofdfoto' : 'Afbeelding ' + (index + 1) }}
+              </button>
+            </li>
+          }
+        </ul>
+      }
+
+      @if (!isArchived()) {
+        @if (primaryImage()?.status === 'Archived') {
+          <p class="field-hint">
+            De hoofdafbeelding is gearchiveerd. Ontkoppel die eerst om een andere hoofdafbeelding te
+            kiezen.
+          </p>
+        }
+        <div class="image-actions">
+          @if (selected.role !== 'PrimaryImage' && selected.status !== 'Archived') {
+            <button
+              type="button"
+              class="button button--secondary"
+              [disabled]="isBusy() || primaryImage()?.status === 'Archived'"
+              (click)="makePrimary()"
+            >
+              {{
+                action() === 'primary'
+                  ? 'Hoofdafbeelding instellen…'
+                  : 'Als hoofdafbeelding instellen'
+              }}
+            </button>
+          }
+          <button
+            #unlinkTrigger
+            type="button"
+            class="button button--quiet"
+            aria-controls="unlink-image-confirmation"
+            [attr.aria-expanded]="confirmUnlink()"
+            [disabled]="isBusy()"
+            (click)="requestUnlink()"
+          >
+            Afbeelding ontkoppelen
+          </button>
+        </div>
+
+        @if (confirmUnlink()) {
+          <div
+            id="unlink-image-confirmation"
+            class="unlink-confirmation"
+            role="group"
+            aria-labelledby="unlink-image-heading"
+          >
+            <strong id="unlink-image-heading">Afbeelding ontkoppelen?</strong>
+            <p>
+              Deze afbeelding verdwijnt bij deze bezitting. Het bestand blijft in je documenten
+              bewaard en wordt niet verwijderd.
+            </p>
+            <div class="image-actions">
+              <button
+                #unlinkConfirmButton
+                type="button"
+                class="button button--danger"
+                [disabled]="isBusy()"
+                (click)="unlinkImage()"
+              >
+                {{ action() === 'unlink' ? 'Ontkoppelen…' : 'Afbeelding ontkoppelen' }}
+              </button>
+              <button
+                type="button"
+                class="button button--secondary"
+                [disabled]="isBusy()"
+                (click)="cancelUnlink()"
+              >
+                Afbeelding behouden
+              </button>
+            </div>
+          </div>
+        }
+      }
+    } @else {
+      <p class="image-empty">
+        Nog geen afbeelding. Voeg een foto toe om deze bezitting gemakkelijker te herkennen.
+      </p>
+    }
+
+    @if (isArchived()) {
+      <p class="field-hint">Herstel de bezitting om afbeeldingen toe te voegen of te wijzigen.</p>
+    } @else {
+      <div class="image-upload">
+        <app-image-picker
+          inputId="asset-detail-image"
+          label="Afbeelding toevoegen"
+          [disabled]="isBusy()"
+          [resetToken]="pickerReset()"
+          (selectionChanged)="selectFile($event)"
+        />
+        <p class="field-hint">
+          {{
+            primaryImage()
+              ? 'De huidige hoofdafbeelding blijft behouden.'
+              : 'De eerste foto wordt je hoofdafbeelding.'
+          }}
+        </p>
+        <button
+          type="button"
+          class="button button--primary upload-button"
+          [disabled]="isBusy() || !selectedFile() || !!selectionError()"
+          (click)="uploadImage()"
+        >
+          {{ action() === 'upload' ? 'Afbeelding toevoegen…' : 'Afbeelding toevoegen' }}
+        </button>
+      </div>
+    }
+  }
+</section>

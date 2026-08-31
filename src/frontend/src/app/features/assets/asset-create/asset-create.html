@@ -11,6 +11,7 @@
     cancelLink="/assets"
     [isSubmitting]="isSubmitting()"
     [serverError]="serverError()"
+    (imageSelected)="selectedImage.set($event)"
     (submitted)="createAsset($event)"
   />
 </div>

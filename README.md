@@ -63,6 +63,20 @@ npm start
 
 The Angular development server is available at `http://localhost:4200`.
 
+### Asset images
+
+Assets support an optional image when creating or editing, and an image gallery on the detail page.
+JPG, PNG and WebP files up to 20 MiB are supported. The first image becomes the primary image;
+additional images can be selected as the primary image from the gallery.
+
+Images use the existing private document API and item links, not public storage URLs or database
+file bytes. Unlinking an image preserves the original document. Archived assets are read-only.
+If metadata is saved but an image upload fails, the detail page reports the partial result so the
+user can retry the image without creating another asset.
+
+Run the frontend tests with `npm test -- --watch=false` in `src/frontend`. Private-image API flow
+tests are included in `dotnet test tests/Mira.API.Tests/Mira.API.Tests.csproj`.
+
 ## Development guidelines
 
 - Keep domain rules independent from ASP.NET Core and database concerns.

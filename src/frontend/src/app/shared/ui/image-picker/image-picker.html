@@ -1,0 +1,45 @@
+<div class="image-picker">
+  <label class="field-label" [for]="inputId()">{{ label() }}</label>
+  <input
+    #fileInput
+    class="file-input"
+    type="file"
+    [id]="inputId()"
+    accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
+    [disabled]="disabled()"
+    [attr.aria-invalid]="error() !== null"
+    [attr.aria-describedby]="inputId() + '-hint' + (error() ? ' ' + inputId() + '-error' : '')"
+    (change)="onFileChange($event)"
+  />
+  <p class="field-hint" [id]="inputId() + '-hint'">JPG, PNG of WebP, maximaal 20 MB.</p>
+
+  @if (error(); as validationError) {
+    <p class="field-error" [id]="inputId() + '-error'" role="alert">{{ validationError }}</p>
+  }
+
+  <!-- A new URL gets a new image element, so old image errors cannot affect a replacement. -->
+  @for (image of previews(); track image.url) {
+    <figure class="image-preview">
+      <img
+        [src]="image.url"
+        [alt]="'Voorbeeld van ' + image.file.name"
+        (error)="onPreviewError(image.url)"
+      />
+      <figcaption>
+        <span class="file-name">{{ image.file.name }}</span>
+        <span class="file-size">{{ formatFileSize(image.file.size) }}</span>
+      </figcaption>
+    </figure>
+  }
+
+  @if (preview() || error()) {
+    <button
+      class="button button--quiet clear-selection"
+      type="button"
+      [disabled]="disabled()"
+      (click)="clearSelection()"
+    >
+      Selectie wissen
+    </button>
+  }
+</div>

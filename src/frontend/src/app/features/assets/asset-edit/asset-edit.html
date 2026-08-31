@@ -28,6 +28,7 @@
       [asset]="currentAsset"
       [isSubmitting]="isSubmitting()"
       [serverError]="serverError()"
+      (imageSelected)="selectedImage.set($event)"
       (submitted)="updateAsset($event)"
     />
   }

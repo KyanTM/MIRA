@@ -10,6 +10,7 @@ import {
 } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 
+import { ImagePicker, ImageSelection } from '../../../shared/ui/image-picker/image-picker';
 import { AssetDetail, CreateAssetRequest } from '../models';
 
 const nonWhitespaceValidator: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
@@ -18,7 +19,7 @@ const nonWhitespaceValidator: ValidatorFn = (control: AbstractControl): Validati
 
 @Component({
   selector: 'app-asset-form',
-  imports: [ReactiveFormsModule, RouterLink],
+  imports: [ImagePicker, ReactiveFormsModule, RouterLink],
   templateUrl: './asset-form.html',
   styleUrl: './asset-form.css',
 })
@@ -31,6 +32,8 @@ export class AssetForm {
   readonly isSubmitting = input(false);
   readonly serverError = input<string | null>(null);
   readonly submitted = output<CreateAssetRequest>();
+  readonly imageSelected = output<File | null>();
+  readonly imageError = signal<string | null>(null);
   readonly showValidationSummary = signal(false);
 
   readonly form = new FormGroup({
@@ -99,7 +102,7 @@ export class AssetForm {
       return;
     }
 
-    if (this.form.invalid) {
+    if (this.form.invalid || this.imageError()) {
       this.form.markAllAsTouched();
       this.showValidationSummary.set(true);
       this.focusFirstInvalidControl();
@@ -123,6 +126,11 @@ export class AssetForm {
     });
   }
 
+  onImageSelected(selection: ImageSelection): void {
+    this.imageError.set(selection.error);
+    this.imageSelected.emit(selection.error ? null : selection.file);
+  }
+
   isInvalid(control: AbstractControl): boolean {
     return control.invalid && control.touched;
   }
@@ -138,6 +146,10 @@ export class AssetForm {
     )?.[0];
 
     if (firstInvalidControlName === undefined) {
+      if (this.imageError()) {
+        this.hostElement.nativeElement.querySelector<HTMLElement>('#asset-image')?.focus();
+      }
+
       return;
     }
 

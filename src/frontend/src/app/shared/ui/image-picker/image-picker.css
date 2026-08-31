@@ -1,0 +1,96 @@
+:host {
+  display: block;
+  min-width: 0;
+}
+
+.image-picker {
+  min-width: 0;
+}
+
+.file-input {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  color: var(--mira-text);
+  font-size: 0.875rem;
+  border-radius: var(--mira-radius-sm);
+}
+
+.file-input::file-selector-button {
+  min-height: 44px;
+  margin-right: 0.75rem;
+  border: 1px solid var(--mira-border-strong);
+  border-radius: var(--mira-radius-sm);
+  background: var(--mira-surface);
+  color: var(--mira-navy-900);
+  padding: 0.65rem 0.9rem;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    background-color var(--mira-transition),
+    border-color var(--mira-transition);
+}
+
+.file-input:hover:not(:disabled)::file-selector-button {
+  border-color: var(--mira-blue-700);
+  background: var(--mira-blue-50);
+}
+
+.file-input[aria-invalid='true']::file-selector-button {
+  border-color: var(--mira-danger);
+}
+
+.file-input:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.file-input:disabled::file-selector-button {
+  cursor: not-allowed;
+}
+
+.image-preview {
+  max-width: 100%;
+  margin: 1rem 0 0;
+}
+
+.image-preview img {
+  display: block;
+  width: auto;
+  max-width: 100%;
+  height: auto;
+  max-height: 180px;
+  border-radius: var(--mira-radius-sm);
+  object-fit: contain;
+}
+
+.image-preview figcaption {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.25rem 0.75rem;
+  margin-top: 0.6rem;
+  font-size: 0.8125rem;
+}
+
+.file-name {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.file-size {
+  color: var(--mira-text-muted);
+  white-space: nowrap;
+}
+
+.clear-selection {
+  margin-top: 0.4rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .file-input::file-selector-button {
+    transition: none;
+  }
+}

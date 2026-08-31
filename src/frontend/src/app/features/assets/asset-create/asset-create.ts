@@ -2,10 +2,12 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Component, DestroyRef, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
-import { finalize } from 'rxjs';
+import { catchError, finalize, map, of, switchMap } from 'rxjs';
 
 import { PageHeader } from '../../../shared/ui/page-header/page-header';
 import { AssetForm } from '../asset-form/asset-form';
+import { imageUploadError } from '../asset-image-errors';
+import { AssetImageService } from '../data-access/asset-image.service';
 import { AssetService } from '../data-access/asset.service';
 import { CreateAssetRequest } from '../models';
 
@@ -17,30 +19,54 @@ import { CreateAssetRequest } from '../models';
 })
 export class AssetCreate {
   private readonly assetService = inject(AssetService);
+  private readonly assetImageService = inject(AssetImageService);
   private readonly router = inject(Router);
   private readonly destroyRef = inject(DestroyRef);
+  private savedAssetId: string | null = null;
 
+  readonly selectedImage = signal<File | null>(null);
   readonly isSubmitting = signal(false);
   readonly serverError = signal<string | null>(null);
 
   createAsset(request: CreateAssetRequest): void {
-    if (this.isSubmitting()) {
+    if (this.isSubmitting() || this.savedAssetId !== null) {
       return;
     }
 
+    const image = this.selectedImage();
     this.isSubmitting.set(true);
     this.serverError.set(null);
 
     this.assetService
       .createAsset(request)
       .pipe(
+        switchMap((asset) => {
+          // The asset already exists, even if its optional image upload fails.
+          this.savedAssetId = asset.id;
+
+          if (image === null) {
+            return of({ asset, warning: null });
+          }
+
+          return this.assetImageService.uploadImage(asset.id, image, 'PrimaryImage').pipe(
+            map(() => ({ asset, warning: null })),
+            catchError((error: unknown) =>
+              of({
+                asset,
+                warning: `De bezitting is opgeslagen. ${imageUploadError(error)} Voeg de afbeelding hieronder opnieuw toe.`,
+              }),
+            ),
+          );
+        }),
         takeUntilDestroyed(this.destroyRef),
         finalize(() => this.isSubmitting.set(false)),
       )
       .subscribe({
-        next: (asset) => {
+        next: ({ asset, warning }) => {
           void this.router.navigate(['/assets', asset.id], {
-            state: { message: 'Bezitting toegevoegd.' },
+            state: warning
+              ? { message: 'Bezitting toegevoegd.', warning }
+              : { message: 'Bezitting toegevoegd.' },
           });
         },
         error: (error: HttpErrorResponse) => {

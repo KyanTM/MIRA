@@ -47,6 +47,10 @@
       <p class="notice notice--error" role="alert">{{ message }}</p>
     }
 
+    @if (uploadWarning(); as message) {
+      <p class="notice notice--warning" role="alert">{{ message }}</p>
+    }
+
     @if (currentAsset.status === 'Archived') {
       <section class="archive-banner" aria-label="Gearchiveerde bezitting">
         <div>
@@ -67,6 +71,13 @@
 
     <div class="detail-layout">
       <div class="detail-content">
+        <app-asset-images
+          [assetId]="currentAsset.id"
+          [assetName]="currentAsset.name"
+          [isArchived]="currentAsset.status === 'Archived'"
+          (imageAdded)="uploadWarning.set(null)"
+        />
+
         <section class="detail-section panel">
           <div class="section-heading">
             <h2>Algemeen</h2>
