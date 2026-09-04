@@ -1,25 +1,50 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
 
 import { environment } from '../../../../environments/environment';
+import {
+  CreateSubscriptionRequest,
+  SubscriptionDetail,
+  SubscriptionSummary,
+  UpdateSubscriptionRequest,
+} from '../models';
 
 @Injectable({ providedIn: 'root' })
 export class SubscriptionService {
   private readonly http = inject(HttpClient);
   private readonly subscriptionsUrl = `${environment.apiUrl}/subscriptions`;
 
-  // ===== JOUW CODE — leerstap 2 =====
-  // Maak de methodes in deze volgorde:
-  // 1. getSubscriptions(includeArchived)
-  // 2. getSubscription(id)
-  // 3. createSubscription(request)
-  // 4. updateSubscription(id, request)
-  // 5. archiveSubscription(id)
-  // 6. restoreSubscription(id)
-  //
-  // Gebruik this.http en this.subscriptionsUrl hierboven.
-  // Kijk telkens naar asset.service.ts, maar typ de methode zelf over
-  // en vervang bewust de Asset-types door de juiste Subscription-types.
-  // ===== EINDE JOUW CODE =====
+  getSubscriptions(includeArchived = false): Observable<SubscriptionSummary[]> {
+    if (!includeArchived) {
+      return this.http.get<SubscriptionSummary[]>(this.subscriptionsUrl);
+    }
 
+    const params = new HttpParams().set('includeArchived', true);
+
+    return this.http.get<SubscriptionSummary[]>(this.subscriptionsUrl, { params });
+  }
+
+  getSubscription(id: string): Observable<SubscriptionDetail> {
+    return this.http.get<SubscriptionDetail>(`${this.subscriptionsUrl}/${id}`);
+  }
+
+  createSubscription(request: CreateSubscriptionRequest): Observable<SubscriptionDetail> {
+    return this.http.post<SubscriptionDetail>(this.subscriptionsUrl, request);
+  }
+
+  updateSubscription(
+    id: string,
+    request: UpdateSubscriptionRequest,
+  ): Observable<SubscriptionDetail> {
+    return this.http.put<SubscriptionDetail>(`${this.subscriptionsUrl}/${id}`, request);
+  }
+
+  archiveSubscription(id: string): Observable<SubscriptionDetail> {
+    return this.http.patch<SubscriptionDetail>(`${this.subscriptionsUrl}/${id}/archive`, null);
+  }
+
+  restoreSubscription(id: string): Observable<SubscriptionDetail> {
+    return this.http.patch<SubscriptionDetail>(`${this.subscriptionsUrl}/${id}/restore`, null);
+  }
 }
