@@ -126,7 +126,7 @@
               <dd>
                 {{
                   currentAsset.purchaseDate
-                    ? (currentAsset.purchaseDate | date: 'd MMMM y' : 'UTC')
+                    ? (currentAsset.purchaseDate | dateOnly: 'd MMMM y')
                     : 'Niet ingevuld'
                 }}
               </dd>

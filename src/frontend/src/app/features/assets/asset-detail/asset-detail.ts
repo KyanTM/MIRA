@@ -10,6 +10,7 @@ import { finalize } from 'rxjs';
 import { ErrorState } from '../../../shared/ui/error-state/error-state';
 import { PageHeader } from '../../../shared/ui/page-header/page-header';
 import { StatusBadge } from '../../../shared/ui/status-badge/status-badge';
+import { DateOnlyPipe } from '../../../shared/date-only.pipe';
 import { AssetImages } from '../asset-images/asset-images';
 import { AssetService } from '../data-access/asset.service';
 import { AssetDetail as AssetDetailModel } from '../models';
@@ -19,6 +20,7 @@ import { AssetDetail as AssetDetailModel } from '../models';
   imports: [
     AssetImages,
     CurrencyPipe,
+    DateOnlyPipe,
     DatePipe,
     ErrorState,
     FontAwesomeModule,

@@ -10,6 +10,7 @@ import { finalize } from 'rxjs';
 import { ErrorState } from '../../../shared/ui/error-state/error-state';
 import { PageHeader } from '../../../shared/ui/page-header/page-header';
 import { StatusBadge } from '../../../shared/ui/status-badge/status-badge';
+import { DateOnlyPipe } from '../../../shared/date-only.pipe';
 import { SubscriptionService } from '../data-access/subscription.service';
 import { BillingFrequency, SubscriptionDetail } from '../models';
 
@@ -25,6 +26,7 @@ const BILLING_FREQUENCY_LABELS: Record<BillingFrequency, string> = {
   selector: 'app-subscription-detail',
   imports: [
     CurrencyPipe,
+    DateOnlyPipe,
     DatePipe,
     ErrorState,
     FontAwesomeModule,

@@ -1,4 +1,4 @@
-import { CurrencyPipe, DatePipe } from '@angular/common';
+import { CurrencyPipe } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, computed, DestroyRef, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -11,6 +11,7 @@ import { EmptyState } from '../../../shared/ui/empty-state/empty-state';
 import { ErrorState } from '../../../shared/ui/error-state/error-state';
 import { PageHeader } from '../../../shared/ui/page-header/page-header';
 import { StatusBadge } from '../../../shared/ui/status-badge/status-badge';
+import { DateOnlyPipe } from '../../../shared/date-only.pipe';
 import { SubscriptionService } from '../data-access/subscription.service';
 import { BillingFrequency, SubscriptionSummary } from '../models';
 
@@ -26,7 +27,7 @@ const BILLING_FREQUENCY_LABELS: Record<BillingFrequency, string> = {
   selector: 'app-subscription-list',
   imports: [
     CurrencyPipe,
-    DatePipe,
+    DateOnlyPipe,
     EmptyState,
     ErrorState,
     FontAwesomeModule,

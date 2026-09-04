@@ -109,11 +109,7 @@
                 </span>
               </td>
               <td headers="asset-column-date" data-label="Aankoopdatum">
-                {{
-                  asset.purchaseDate
-                    ? (asset.purchaseDate | date: 'd MMM y' : 'UTC')
-                    : 'Niet ingevuld'
-                }}
+                {{ asset.purchaseDate ? (asset.purchaseDate | dateOnly) : 'Niet ingevuld' }}
               </td>
               <td headers="asset-column-price" data-label="Aankoopprijs">
                 {{

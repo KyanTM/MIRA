@@ -116,7 +116,7 @@
               </td>
               <td headers="subscription-column-payment" data-label="Volgende betaling">
                 @if (subscription.nextBillingDate) {
-                  {{ subscription.nextBillingDate | date: 'd MMM y' : 'UTC' }}
+                  {{ subscription.nextBillingDate | dateOnly }}
                 } @else {
                   <span class="muted-value">Niet gepland</span>
                 }

@@ -93,7 +93,7 @@
               <dd>
                 {{
                   currentSubscription.nextBillingDate
-                    ? (currentSubscription.nextBillingDate | date: 'd MMMM y' : 'UTC')
+                    ? (currentSubscription.nextBillingDate | dateOnly: 'd MMMM y')
                     : 'Niet gepland'
                 }}
               </dd>
@@ -113,7 +113,7 @@
               <dd>
                 {{
                   currentSubscription.startDate
-                    ? (currentSubscription.startDate | date: 'd MMMM y' : 'UTC')
+                    ? (currentSubscription.startDate | dateOnly: 'd MMMM y')
                     : 'Niet ingevuld'
                 }}
               </dd>
@@ -123,7 +123,7 @@
               <dd>
                 {{
                   currentSubscription.endDate
-                    ? (currentSubscription.endDate | date: 'd MMMM y' : 'UTC')
+                    ? (currentSubscription.endDate | dateOnly: 'd MMMM y')
                     : 'Geen einddatum'
                 }}
               </dd>
@@ -133,7 +133,7 @@
               <dd>
                 {{
                   currentSubscription.trialEndsOn
-                    ? (currentSubscription.trialEndsOn | date: 'd MMMM y' : 'UTC')
+                    ? (currentSubscription.trialEndsOn | dateOnly: 'd MMMM y')
                     : 'Geen proefperiode'
                 }}
               </dd>
