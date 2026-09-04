@@ -181,6 +181,47 @@ public sealed class BackendSecurityFlowTests : IClassFixture<MiraApiFactory>
             response.Content.Headers.ContentType?.MediaType);
     }
 
+    [Fact]
+    public async Task DashboardShowsAnInactiveSubscriptionAsInactive()
+    {
+        using var client = CreateClient();
+        var antiforgeryToken = await RegisterAsync(client, "inactive-subscription");
+
+        using var createRequest = CreateJsonRequest(
+            HttpMethod.Post,
+            "/api/subscriptions",
+            new
+            {
+                name = "Gepauzeerde streamingdienst",
+                provider = "Streamvoorbeeld",
+                price = 12.99m,
+                billingFrequency = "Monthly",
+                isActive = false
+            },
+            antiforgeryToken);
+
+        var createResponse = await client.SendAsync(createRequest);
+        Assert.Equal(HttpStatusCode.Created, createResponse.StatusCode);
+
+        using var createdJson = JsonDocument.Parse(
+            await createResponse.Content.ReadAsStringAsync());
+        var subscriptionId = createdJson.RootElement.GetProperty("id").GetGuid();
+
+        var dashboardResponse = await client.GetAsync("/api/dashboard");
+        Assert.Equal(HttpStatusCode.OK, dashboardResponse.StatusCode);
+
+        using var dashboardJson = JsonDocument.Parse(
+            await dashboardResponse.Content.ReadAsStringAsync());
+        var recentSubscription = dashboardJson.RootElement
+            .GetProperty("recentItems")
+            .EnumerateArray()
+            .Single(item => item.GetProperty("id").GetGuid() == subscriptionId);
+
+        Assert.Equal(
+            "Inactive",
+            recentSubscription.GetProperty("status").GetString());
+    }
+
     private HttpClient CreateClient()
     {
         return _factory.CreateClient(

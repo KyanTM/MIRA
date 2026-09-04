@@ -44,7 +44,7 @@ public class DashboardRepository : IDashboardRepository
                 item.Id,
                 item.Name,
                 GetItemType(item),
-                item.Status.ToString(),
+                GetDashboardStatus(item),
                 item.CreatedAt))
             .ToList();
 
@@ -155,5 +155,15 @@ public class DashboardRepository : IDashboardRepository
             Subscription => nameof(Subscription),
             _ => nameof(Item)
         };
+    }
+
+    private static string GetDashboardStatus(Item item)
+    {
+        if (item is Subscription { IsActive: false, Status: ItemStatus.Active })
+        {
+            return ItemStatus.Inactive.ToString();
+        }
+
+        return item.Status.ToString();
     }
 }
