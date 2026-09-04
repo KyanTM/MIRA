@@ -1,1 +1,13 @@
-<!-- TODO leerstap 6: gebruik hier het herbruikbare subscription-form. -->
+<section class="space-y-6">
+  <header>
+    <h1 class="text-3xl font-bold text-slate-950">Abonnement toevoegen</h1>
+    <p class="mt-2 text-slate-600">Leg de kosten en belangrijke datums vast.</p>
+  </header>
+
+  <app-subscription-form
+    submitLabel="Abonnement toevoegen"
+    [isSubmitting]="isSubmitting()"
+    [serverError]="serverError()"
+    (submitted)="createSubscription($event)"
+  />
+</section>

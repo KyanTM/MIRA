@@ -1,1 +1,19 @@
-<!-- TODO leerstap 7: gebruik hier hetzelfde subscription-form met bestaande data. -->
+<section class="space-y-6">
+  <header>
+    <h1 class="text-3xl font-bold text-slate-950">Abonnement bewerken</h1>
+  </header>
+
+  <!-- ===== JOUW CODE — leerstap 7C ===== -->
+  <!-- Toon vóór het formulier ook een loading state en loadError. -->
+  <!-- ===== EINDE JOUW CODE ===== -->
+
+  @if (subscription(); as currentSubscription) {
+    <app-subscription-form
+      [subscription]="currentSubscription"
+      submitLabel="Wijzigingen opslaan"
+      [isSubmitting]="isSubmitting()"
+      [serverError]="serverError()"
+      (submitted)="updateSubscription($event)"
+    />
+  }
+</section>

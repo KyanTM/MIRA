@@ -1,13 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { SubscriptionDetail } from './subscription-detail';
+import { provideRouter } from '@angular/router';
 
-describe('SubscriptionDetail', () => {
-  let fixture: ComponentFixture<SubscriptionDetail>;
+import { SubscriptionDetailPage } from './subscription-detail';
+
+describe('SubscriptionDetailPage', () => {
+  let fixture: ComponentFixture<SubscriptionDetailPage>;
 
   beforeEach(async () => {
-    await TestBed.configureTestingModule({ imports: [SubscriptionDetail] }).compileComponents();
-    fixture = TestBed.createComponent(SubscriptionDetail);
+    await TestBed.configureTestingModule({
+      imports: [SubscriptionDetailPage],
+      providers: [provideRouter([])],
+    }).compileComponents();
+    fixture = TestBed.createComponent(SubscriptionDetailPage);
     fixture.detectChanges();
   });
 

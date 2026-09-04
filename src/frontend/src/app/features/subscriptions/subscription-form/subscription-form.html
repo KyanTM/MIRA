@@ -1,1 +1,28 @@
-<!-- TODO leerstap 5: voeg labels, velden, validatiemeldingen en acties toe. -->
+<form class="space-y-5" [formGroup]="form" (ngSubmit)="submit()">
+  <div>
+    <label for="subscription-name">Naam</label>
+    <input id="subscription-name" type="text" formControlName="name" />
+
+    <!-- JOUW CODE: toon required en maxlength alleen na aanraken van het veld. -->
+  </div>
+
+  <div>
+    <label for="subscription-provider">Aanbieder</label>
+    <input id="subscription-provider" type="text" formControlName="provider" />
+
+    <!-- JOUW CODE: voeg ook hier de validatiemeldingen toe. -->
+  </div>
+
+  <!-- ===== JOUW CODE — leerstap 5C ===== -->
+  <!-- Voeg hier de inputs toe die overeenkomen met jouw extra FormControls. -->
+  <!-- Gebruik voor billingFrequency een select en voor booleans een checkbox. -->
+  <!-- ===== EINDE JOUW CODE ===== -->
+
+  @if (serverError()) {
+    <p class="text-sm text-red-700" role="alert">{{ serverError() }}</p>
+  }
+
+  <button type="submit" [disabled]="isSubmitting()">
+    {{ isSubmitting() ? 'Bezig met opslaan…' : submitLabel() }}
+  </button>
+</form>
