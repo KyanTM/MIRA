@@ -9,6 +9,24 @@
   padding: 1.25rem 1.35rem;
 }
 
+.metric--link {
+  display: block;
+  color: inherit;
+  text-decoration: none;
+  transition:
+    background-color var(--mira-transition),
+    color var(--mira-transition);
+}
+
+.metric--link:hover {
+  background: var(--mira-blue-50);
+  color: var(--mira-blue-800);
+}
+
+.metric--link:hover strong {
+  color: var(--mira-blue-800);
+}
+
 .metric + .metric {
   border-left: 1px solid var(--mira-border);
 }
@@ -43,15 +61,15 @@
     border-left: 0;
   }
 
-  .metric:nth-of-type(even) {
+  .metric:nth-child(even) {
     border-left: 1px solid var(--mira-border);
   }
 
-  .metric:nth-of-type(n + 3) {
+  .metric:nth-child(n + 3) {
     border-top: 1px solid var(--mira-border);
   }
 
-  .metric:nth-of-type(5) {
+  .metric:nth-child(5) {
     grid-column: 1 / -1;
     border-left: 0;
   }

@@ -11,6 +11,8 @@
           <div class="item-heading">
             @if (item.itemType === 'Asset') {
               <a [routerLink]="['/assets', item.id]">{{ item.name }}</a>
+            } @else if (item.itemType === 'Subscription') {
+              <a [routerLink]="['/subscriptions', item.id]">{{ item.name }}</a>
             } @else {
               <strong>{{ item.name }}</strong>
             }

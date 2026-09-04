@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideRouter } from '@angular/router';
 
 import { AttentionList } from './attention-list';
 
@@ -9,6 +10,7 @@ describe('AttentionList', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [AttentionList],
+      providers: [provideRouter([])],
     }).compileComponents();
 
     fixture = TestBed.createComponent(AttentionList);
@@ -28,5 +30,22 @@ describe('AttentionList', () => {
 
   it('shows a meaningful empty state', () => {
     expect(fixture.nativeElement.textContent).toContain('Geen aandachtspunten');
+  });
+
+  it('links an upcoming subscription payment to its detail page', () => {
+    fixture.componentRef.setInput('items', [
+      {
+        itemId: 'subscription-1',
+        itemName: 'Internet',
+        itemType: 'Subscription',
+        eventType: 'SubscriptionBilling',
+        dueOn: '2026-09-02',
+      },
+    ]);
+    fixture.detectChanges();
+
+    const link = fixture.nativeElement.querySelector('a');
+    expect(link.getAttribute('href')).toBe('/subscriptions/subscription-1');
+    expect(link.textContent).toContain('Internet');
   });
 });

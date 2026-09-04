@@ -26,26 +26,7 @@
 }
 
 .search-input input {
-  width: 100%;
-  min-height: 44px;
-  border: 1px solid var(--mira-border-strong);
-  border-radius: var(--mira-radius-sm);
-  background: var(--mira-surface);
-  color: var(--mira-text);
   padding: 0.7rem 0.8rem 0.7rem 2.55rem;
-  outline: none;
-  transition:
-    border-color var(--mira-transition),
-    box-shadow var(--mira-transition);
-}
-
-.search-input input:hover {
-  border-color: #8094aa;
-}
-
-.search-input input:focus {
-  border-color: var(--mira-blue-700);
-  box-shadow: 0 0 0 3px var(--mira-blue-100);
 }
 
 .search-input input::placeholder {
