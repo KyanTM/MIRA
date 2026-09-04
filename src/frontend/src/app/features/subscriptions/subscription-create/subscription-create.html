@@ -1,13 +1,16 @@
-<section class="space-y-6">
-  <header>
-    <h1 class="text-3xl font-bold text-slate-950">Abonnement toevoegen</h1>
-    <p class="mt-2 text-slate-600">Leg de kosten en belangrijke datums vast.</p>
-  </header>
+<div class="page-container form-page">
+  <app-page-header
+    title="Abonnement toevoegen"
+    description="Leg de kosten, betaalmomenten en belangrijke datums van je abonnement vast."
+    backLink="/subscriptions"
+    backLabel="Terug naar abonnementen"
+  />
 
   <app-subscription-form
     submitLabel="Abonnement toevoegen"
+    cancelLink="/subscriptions"
     [isSubmitting]="isSubmitting()"
     [serverError]="serverError()"
     (submitted)="createSubscription($event)"
   />
-</section>
+</div>
