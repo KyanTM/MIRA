@@ -1,0 +1,404 @@
+<div class="page-container">
+  <header class="record-header">
+    <div>
+      @if (mode !== 'list') {
+        <a class="back-link" [routerLink]="['/', kind]"
+          >Terug naar {{ config.title.toLowerCase() }}</a
+        >
+      }
+      <h1>
+        {{
+          mode === 'list'
+            ? config.title
+            : mode === 'new'
+              ? config.singular + ' toevoegen'
+              : mode === 'edit'
+                ? config.singular + ' bewerken'
+                : record()?.name || config.singular
+        }}
+      </h1>
+      @if (mode === 'list') {
+        <p>Beheer je {{ config.title.toLowerCase() }} en de bijbehorende gegevens.</p>
+      }
+    </div>
+    <div class="actions">
+      @if (mode === 'list') {
+        <a class="button button--primary" [routerLink]="['/', kind, 'new']"
+          >{{ config.singular }} toevoegen</a
+        >
+      }
+      @if (mode === 'detail' && record(); as row) {
+        <app-status-badge [status]="row.status" />
+        @if (row.status !== 'Archived') {
+          <a class="button button--secondary" [routerLink]="['/', kind, id, 'edit']">Bewerken</a>
+        }
+        <button class="button button--secondary" [disabled]="busy()" (click)="archive()">
+          {{ row.status === 'Archived' ? 'Herstellen' : 'Archiveren' }}
+        </button>
+        @if (kind === 'documents') {
+          @if (canPreview()) {
+            <button class="button button--secondary" [disabled]="busy()" (click)="preview()">
+              Bekijken
+            </button>
+          }
+          <button class="button button--primary" [disabled]="busy()" (click)="download()">
+            Downloaden
+          </button>
+        }
+      }
+    </div>
+  </header>
+  @if (notice()) {
+    <p class="notice" role="status">{{ notice() }}</p>
+  }
+  @if (error()) {
+    <div class="error-notice" role="alert">
+      <p>{{ error() }}</p>
+      @if (mode === 'list' || (mode === 'detail' && !record())) {
+        <button class="button button--secondary" (click)="load()">Opnieuw proberen</button>
+      }
+    </div>
+  }
+  @if (mode === 'list') {
+    <div class="record-toolbar">
+      <label class="search-label"
+        >Zoeken<input
+          class="field-control"
+          type="search"
+          maxlength="200"
+          placeholder="Zoek op naam of organisatie"
+          [value]="search()"
+          (input)="search.set($any($event.target).value)"
+      /></label>
+      @if (kind === 'documents') {
+        <label
+          >Documenttype<select
+            class="field-control"
+            [value]="typeFilter()"
+            (change)="typeFilter.set($any($event.target).value)"
+          >
+            <option value="">Alle types</option>
+            @for (option of options(field('documentType')); track option.id) {
+              <option [value]="option.id">{{ option.name }}</option>
+            }
+          </select></label
+        >
+      }
+      <label class="checkbox-label"
+        ><input
+          type="checkbox"
+          [checked]="archived()"
+          [disabled]="loading()"
+          (change)="archived.set($any($event.target).checked); load()"
+        />
+        Toon ook gearchiveerd</label
+      >
+      <button class="button button--quiet" [disabled]="loading()" (click)="resetFilters()">
+        Filters wissen
+      </button>
+    </div>
+  }
+  @if (loading()) {
+    <div class="loading-rows" role="status" aria-label="Gegevens laden">
+      <span></span><span></span><span></span>
+    </div>
+  } @else if (mode === 'list' && !error()) {
+    <p class="result-count" role="status">{{ filtered().length }} resultaten</p>
+    @if (filtered().length) {
+      <p class="table-hint">Veeg horizontaal om alle kolommen te bekijken.</p>
+      <div class="table-scroll" tabindex="0" role="region" [attr.aria-label]="config.title">
+        <table>
+          <caption class="sr-only">
+            {{
+              config.title
+            }}
+          </caption>
+          <thead>
+            <tr>
+              <th scope="col">Naam</th>
+              @for (key of config.columns; track key) {
+                <th scope="col">{{ field(key).label }}</th>
+              }
+              <th scope="col">Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (row of filtered(); track row.id) {
+              <tr>
+                <td>
+                  <a [routerLink]="['/', kind, row.id]">{{ row.name }}</a>
+                  @if (kind === 'warranties') {
+                    <small>{{ row['assetName'] }}</small>
+                  }
+                </td>
+                @for (key of config.columns; track key) {
+                  <td>{{ display(row, field(key)) }}</td>
+                }
+                <td><app-status-badge [status]="row.status" /></td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    } @else {
+      <div class="record-empty">
+        <h2>
+          {{ rows().length ? 'Geen overeenkomsten' : 'Nog geen ' + config.title.toLowerCase() }}
+        </h2>
+        <p>
+          {{
+            rows().length
+              ? 'Pas je zoekopdracht of filters aan.'
+              : 'Voeg een ' +
+                config.singular.toLowerCase() +
+                ' toe om je administratie aan te vullen.'
+          }}
+        </p>
+        <a class="button button--secondary" [routerLink]="['/', kind, 'new']"
+          >{{ config.singular }} toevoegen</a
+        >
+      </div>
+    }
+  } @else if (mode === 'new' || (mode === 'edit' && record())) {
+    <form [formGroup]="form" (ngSubmit)="save()" class="record-form" novalidate>
+      <p class="field-hint">Velden met * zijn verplicht.</p>
+      @if (choiceError()) {
+        <p class="error-notice" role="alert">
+          De beschikbare koppelingen konden niet laden.
+          <button type="button" class="button button--quiet" (click)="loadChoices()">
+            Opnieuw proberen
+          </button>
+        </p>
+      }
+      <fieldset [disabled]="busy()">
+        @if (kind === 'documents' && mode === 'new') {
+          <div class="full-width">
+            <label class="field-label" for="upload">Bestand *</label
+            ><input
+              id="upload"
+              type="file"
+              class="field-control"
+              accept=".pdf,.png,.jpg,.jpeg,.webp,.docx,.xlsx,.txt"
+              (change)="selectFile($event)"
+              aria-describedby="upload-hint"
+            />
+            <p id="upload-hint" class="field-hint">
+              PDF, PNG, JPEG, WebP, DOCX, XLSX of TXT. Maximaal 20 MB.
+            </p>
+          </div>
+        }
+        @for (field of config.fields; track field.key) {
+          <div [class.full-width]="field.type === 'textarea'">
+            <label [for]="field.key" class="field-label"
+              >{{ field.label }}{{ field.required ? ' *' : '' }}</label
+            >
+            @switch (field.type) {
+              @case ('textarea') {
+                <textarea
+                  class="field-control"
+                  [id]="field.key"
+                  [formControlName]="field.key"
+                  [attr.maxlength]="field.max"
+                  [attr.aria-invalid]="
+                    form.controls[field.key].touched && form.controls[field.key].invalid
+                  "
+                  [attr.aria-describedby]="field.key + '-error'"
+                ></textarea>
+              }
+              @case ('select') {
+                <select
+                  class="field-control"
+                  [id]="field.key"
+                  [formControlName]="field.key"
+                  [attr.aria-invalid]="
+                    form.controls[field.key].touched && form.controls[field.key].invalid
+                  "
+                  [attr.aria-describedby]="field.key + '-error'"
+                >
+                  <option value="">
+                    {{ field.required ? 'Selecteer een optie' : 'Niet ingesteld' }}
+                  </option>
+                  @for (option of options(field); track option.id) {
+                    <option [value]="option.id">{{ option.name }}</option>
+                  }
+                </select>
+                @if (field.key === 'assetId') {
+                  <a class="field-hint" routerLink="/assets/new">Bezitting toevoegen</a>
+                }
+              }
+              @case ('checkbox') {
+                <input [id]="field.key" type="checkbox" [formControlName]="field.key" />
+              }
+              @default {
+                <input
+                  class="field-control"
+                  [id]="field.key"
+                  [type]="field.type || 'text'"
+                  [formControlName]="field.key"
+                  [attr.maxlength]="field.max"
+                  [attr.min]="field.min"
+                  [attr.step]="field.type === 'number' ? (field.integer ? '1' : '0.01') : null"
+                  [attr.aria-invalid]="
+                    form.controls[field.key].touched && form.controls[field.key].invalid
+                  "
+                  [attr.aria-describedby]="field.key + '-error'"
+                />
+              }
+            }
+            <p [id]="field.key + '-error'" class="field-error">
+              @if (form.controls[field.key].touched && form.controls[field.key].invalid) {
+                {{ field.label }} is ongeldig. {{ field.required ? 'Vul dit veld in.' : '' }}
+                {{ field.max ? 'Maximaal ' + field.max + ' tekens.' : '' }}
+                {{
+                  field.type === 'number'
+                    ? 'Gebruik een ' +
+                      (field.integer ? 'geheel ' : '') +
+                      'getal vanaf ' +
+                      field.min +
+                      '.'
+                    : ''
+                }}
+              }
+            </p>
+          </div>
+        }
+        @if (kind === 'documents' && mode === 'new') {
+          <div class="full-width">
+            <label for="upload-link" class="field-label">Koppelen aan (optioneel)</label
+            ><select id="upload-link" class="field-control" [formControl]="linkControl">
+              <option value="">Geen koppeling</option>
+              @for (choice of availableChoices(); track choice.id) {
+                <option [value]="choice.id">{{ choice.name }}</option>
+              }
+            </select>
+          </div>
+        }
+      </fieldset>
+      @if (form.hasError('dateOrder') && form.touched) {
+        <p class="field-error" role="alert">
+          De eind- of vervaldatum mag niet vóór de begindatum liggen.
+        </p>
+      }
+      <div class="form-actions">
+        <button class="button button--primary" [disabled]="busy()">
+          {{ busy() ? 'Opslaan…' : config.singular + ' opslaan' }}</button
+        ><a class="button button--secondary" [routerLink]="id ? ['/', kind, id] : ['/', kind]"
+          >Annuleren</a
+        >
+      </div>
+    </form>
+  } @else if (mode === 'detail' && record(); as row) {
+    @if (previewUrl(); as url) {
+      <section class="document-preview" aria-label="Documentvoorbeeld">
+        <button class="button button--quiet" (click)="closePreview()">Voorbeeld sluiten</button>
+        @if (row['mimeType'] === 'application/pdf') {
+          <iframe [src]="previewResource()" title="Documentvoorbeeld"></iframe>
+        } @else {
+          <img [src]="url" [alt]="row.name" />
+        }
+      </section>
+    }
+    <section class="record-details" aria-label="Algemene gegevens">
+      <h2>Algemene gegevens</h2>
+      <dl>
+        @for (field of config.fields; track field.key) {
+          @if (field.key !== 'name') {
+            <div>
+              <dt>{{ field.label }}</dt>
+              <dd>
+                @if (field.key === 'assetId') {
+                  <a [routerLink]="['/assets', row['assetId']]">{{ display(row, field) }}</a>
+                } @else {
+                  {{ display(row, field) }}
+                }
+              </dd>
+            </div>
+          }
+        }
+        @if (kind === 'documents') {
+          <div>
+            <dt>Bestand</dt>
+            <dd>{{ row['originalFileName'] }}</dd>
+          </div>
+          <div>
+            <dt>Bestandsgrootte</dt>
+            <dd>{{ row['fileSizeBytes'] }} bytes</dd>
+          </div>
+        }
+      </dl>
+    </section>
+    @if (kind !== 'documents') {
+      <app-item-relations [itemId]="row.id" [archived]="row.status === 'Archived'" />
+    }
+    @if (kind === 'documents') {
+      <section class="record-details">
+        <h2>Gekoppelde items</h2>
+        <ul class="linked-items">
+          @for (link of row.links || []; track link.itemId) {
+            <li>
+              <a [routerLink]="['/', itemPath(link.itemType), link.itemId]">{{ link.itemName }}</a>
+              @if (row.status !== 'Archived') {
+                <button
+                  class="button button--quiet"
+                  [disabled]="busy()"
+                  (click)="changeLink(link.itemId, true)"
+                  [attr.aria-label]="'Koppeling met ' + link.itemName + ' verwijderen'"
+                >
+                  Ontkoppelen
+                </button>
+              }
+            </li>
+          } @empty {
+            <li>Dit document is nog niet aan een item gekoppeld.</li>
+          }
+        </ul>
+        @if (row.status !== 'Archived') {
+          @if (choiceError()) {
+            <p role="alert" class="field-error">
+              Koppelingen laden is mislukt.
+              <button class="button button--quiet" (click)="loadChoices()">Opnieuw proberen</button>
+            </p>
+          }
+          <label for="link-item" class="field-label">Item koppelen</label>
+          <div class="actions">
+            <select id="link-item" class="field-control" [formControl]="linkControl">
+              <option value="">Selecteer een item</option>
+              @for (choice of availableChoices(); track choice.id) {
+                <option [value]="choice.id">{{ choice.name }}</option>
+              }</select
+            ><button
+              class="button button--secondary"
+              [disabled]="busy() || !linkControl.value"
+              (click)="changeLink(linkControl.value)"
+            >
+              Koppelen
+            </button>
+          </div>
+        }
+      </section>
+      @if (row.status === 'Archived') {
+        <section class="record-details">
+          <h2>Permanent verwijderen</h2>
+          <p>
+            Het bestand en alle koppelingen worden definitief verwijderd. Dit kun je niet ongedaan
+            maken.
+          </p>
+          <label class="checkbox-label"
+            ><input
+              type="checkbox"
+              [checked]="confirmDelete()"
+              (change)="confirmDelete.set($any($event.target).checked)"
+            />
+            Ik wil dit document definitief verwijderen.</label
+          ><button
+            class="button button--danger"
+            [disabled]="busy() || !confirmDelete()"
+            (click)="deleteDocument()"
+          >
+            Document definitief verwijderen
+          </button>
+        </section>
+      }
+    }
+  }
+</div>

@@ -1,3 +1,4 @@
+import { ItemRelations } from '../../records/item-relations';
 import { CurrencyPipe, DatePipe } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, DestroyRef, ElementRef, inject, signal, viewChild } from '@angular/core';
@@ -25,6 +26,7 @@ const BILLING_FREQUENCY_LABELS: Record<BillingFrequency, string> = {
 @Component({
   selector: 'app-subscription-detail',
   imports: [
+    ItemRelations,
     CurrencyPipe,
     DateOnlyPipe,
     DatePipe,

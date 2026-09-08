@@ -3,6 +3,8 @@ import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/rou
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import {
   faBoxArchive,
+  faFileContract,
+  faFileLines,
   faHouse,
   faRepeat,
   faRightFromBracket,
@@ -26,6 +28,8 @@ export class AppShell {
   readonly isLoggingOut = signal(false);
   readonly logoutError = signal<string | null>(null);
 
+  readonly contractsIcon = faFileContract;
+  readonly documentsIcon = faFileLines;
   readonly dashboardIcon = faHouse;
   readonly assetsIcon = faBoxArchive;
   readonly subscriptionsIcon = faRepeat;

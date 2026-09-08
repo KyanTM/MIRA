@@ -336,6 +336,14 @@
     <p class="form-server-error" role="alert">{{ serverError() }}</p>
   }
 
+  <section class="form-section">
+    <div class="section-heading">
+      <h2>Contract</h2>
+      <p>Koppel de afspraken die bij dit abonnement horen.</p>
+    </div>
+    <app-contract-picker [control]="form.controls.contractId" [disabled]="isSubmitting()" />
+  </section>
+
   <div class="form-actions">
     @if (isSubmitting()) {
       <span class="button button--secondary" aria-disabled="true">Annuleren</span>

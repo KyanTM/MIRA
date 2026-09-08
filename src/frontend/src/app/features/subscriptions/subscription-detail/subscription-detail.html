@@ -165,7 +165,13 @@
             <div>
               <dt>Contract</dt>
               <dd>
-                {{ currentSubscription.contractId ? 'Contract gekoppeld' : 'Niet gekoppeld' }}
+                @if (currentSubscription.contractId) {
+                  <a [routerLink]="['/contracts', currentSubscription.contractId]"
+                    >Contract openen</a
+                  >
+                } @else {
+                  Niet gekoppeld
+                }
               </dd>
             </div>
             <div class="detail-grid__wide">
@@ -259,5 +265,9 @@
         }
       </aside>
     </div>
+    <app-item-relations
+      [itemId]="currentSubscription.id"
+      [archived]="currentSubscription.status === 'Archived'"
+    />
   }
 </div>

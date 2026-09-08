@@ -238,5 +238,10 @@
         }
       </aside>
     </div>
+    <app-item-relations
+      [itemId]="currentAsset.id"
+      [archived]="currentAsset.status === 'Archived'"
+      [showWarranties]="true"
+    />
   }
 </div>

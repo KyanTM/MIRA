@@ -14,7 +14,7 @@
             } @else if (item.itemType === 'Subscription') {
               <a [routerLink]="['/subscriptions', item.id]">{{ item.name }}</a>
             } @else {
-              <strong>{{ item.name }}</strong>
+              <a [routerLink]="['/' + itemPath(item.itemType), item.id]">{{ item.name }}</a>
             }
             <app-status-badge [status]="item.status" />
           </div>

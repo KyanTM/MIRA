@@ -1,3 +1,5 @@
+import { of } from 'rxjs';
+import { RecordService } from '../../records/record.service';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 
@@ -34,7 +36,7 @@ describe('SubscriptionForm', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [SubscriptionForm],
-      providers: [provideRouter([])],
+      providers: [provideRouter([]), { provide: RecordService, useValue: { list: () => of([]) } }],
     }).compileComponents();
 
     fixture = TestBed.createComponent(SubscriptionForm);
@@ -81,6 +83,7 @@ describe('SubscriptionForm', () => {
     let submittedRequest: CreateSubscriptionRequest | undefined;
     component.submitted.subscribe((request) => (submittedRequest = request));
     component.form.setValue({
+      contractId: '',
       name: '  MIRA Cloud  ',
       description: '  Veilige opslag  ',
       provider: '  MIRA  ',
@@ -146,5 +149,19 @@ describe('SubscriptionForm', () => {
     expect(fixture.nativeElement.querySelector('[aria-disabled="true"]')?.textContent).toContain(
       'Annuleren',
     );
+  });
+  it('emits a changed or cleared contract relationship', () => {
+    fixture.componentRef.setInput('subscription', existingSubscription);
+    fixture.detectChanges();
+    const submitted = vi.fn();
+    component.submitted.subscribe(submitted);
+    component.form.controls.contractId.setValue('contract-2');
+    component.submit();
+    expect(submitted).toHaveBeenLastCalledWith(
+      expect.objectContaining({ contractId: 'contract-2' }),
+    );
+    component.form.controls.contractId.setValue('');
+    component.submit();
+    expect(submitted).toHaveBeenLastCalledWith(expect.objectContaining({ contractId: null }));
   });
 });
