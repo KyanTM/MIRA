@@ -18,8 +18,8 @@ form {
 .form-section {
   display: grid;
   grid-template-columns: minmax(180px, 0.7fr) minmax(0, 1.7fr);
-  gap: clamp(1.25rem, 4vw, 3rem);
-  padding: 1.5rem;
+  gap: 1.5rem;
+  padding: 1.25rem;
 }
 
 .form-section + .form-section {
@@ -42,7 +42,7 @@ form {
 .form-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 1.15rem;
+  gap: 1rem;
 }
 
 .form-grid--single {
