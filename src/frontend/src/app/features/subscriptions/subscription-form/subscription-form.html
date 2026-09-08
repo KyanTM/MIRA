@@ -1,0 +1,349 @@
+<form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+  @if (showValidationSummary() && form.invalid) {
+    <p class="validation-summary" role="alert">
+      Controleer de gemarkeerde velden. Het eerste ongeldige veld is geselecteerd.
+    </p>
+  }
+
+  <section class="form-section" aria-labelledby="subscription-basic-heading">
+    <div class="section-heading">
+      <h2 id="subscription-basic-heading">Basisgegevens</h2>
+      <p>Gebruik een herkenbare naam en noteer bij welke aanbieder het abonnement loopt.</p>
+    </div>
+
+    <div class="form-grid form-grid--single">
+      <div class="field-group">
+        <label class="field-label" for="subscription-name">
+          Naam <span aria-hidden="true">*</span>
+        </label>
+        <input
+          id="subscription-name"
+          class="field-control"
+          type="text"
+          formControlName="name"
+          required
+          maxlength="200"
+          autocomplete="off"
+          [attr.aria-invalid]="isInvalid(form.controls.name)"
+          [attr.aria-describedby]="isInvalid(form.controls.name) ? 'subscription-name-error' : null"
+        />
+        @if (isInvalid(form.controls.name)) {
+          <p id="subscription-name-error" class="field-error">
+            @if (
+              form.controls.name.hasError('required') || form.controls.name.hasError('whitespace')
+            ) {
+              Vul een naam in.
+            } @else {
+              Gebruik maximaal 200 tekens.
+            }
+          </p>
+        }
+      </div>
+
+      <div class="field-group">
+        <label class="field-label" for="subscription-provider">
+          Aanbieder <span aria-hidden="true">*</span>
+        </label>
+        <input
+          id="subscription-provider"
+          class="field-control"
+          type="text"
+          formControlName="provider"
+          required
+          maxlength="200"
+          autocomplete="off"
+          [attr.aria-invalid]="isInvalid(form.controls.provider)"
+          [attr.aria-describedby]="
+            isInvalid(form.controls.provider) ? 'subscription-provider-error' : null
+          "
+        />
+        @if (isInvalid(form.controls.provider)) {
+          <p id="subscription-provider-error" class="field-error">
+            @if (
+              form.controls.provider.hasError('required') ||
+              form.controls.provider.hasError('whitespace')
+            ) {
+              Vul een aanbieder in.
+            } @else {
+              Gebruik maximaal 200 tekens.
+            }
+          </p>
+        }
+      </div>
+
+      <div class="field-group">
+        <label class="field-label" for="subscription-description">Beschrijving</label>
+        <textarea
+          id="subscription-description"
+          class="field-control"
+          formControlName="description"
+          maxlength="2000"
+          [attr.aria-invalid]="isInvalid(form.controls.description)"
+          [attr.aria-describedby]="
+            isInvalid(form.controls.description)
+              ? 'subscription-description-error'
+              : 'subscription-description-hint'
+          "
+        ></textarea>
+        <p id="subscription-description-hint" class="field-hint">
+          Bijvoorbeeld waarvoor je het abonnement gebruikt of wie er gebruik van maakt.
+        </p>
+        @if (isInvalid(form.controls.description)) {
+          <p id="subscription-description-error" class="field-error">
+            Gebruik maximaal 2.000 tekens.
+          </p>
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="form-section" aria-labelledby="subscription-cost-heading">
+    <div class="section-heading">
+      <h2 id="subscription-cost-heading">Kosten</h2>
+      <p>Bewaar het bedrag per facturatieperiode en een herkenbare betaalmethode.</p>
+    </div>
+
+    <div class="form-grid">
+      <div class="field-group">
+        <label class="field-label" for="subscription-price">
+          Bedrag <span aria-hidden="true">*</span>
+        </label>
+        <div class="money-input">
+          <span aria-hidden="true">€</span>
+          <input
+            id="subscription-price"
+            class="field-control"
+            type="number"
+            formControlName="price"
+            required
+            min="0"
+            step="0.01"
+            inputmode="decimal"
+            [attr.aria-invalid]="isInvalid(form.controls.price)"
+            [attr.aria-describedby]="
+              isInvalid(form.controls.price) ? 'subscription-price-error' : null
+            "
+          />
+        </div>
+        @if (isInvalid(form.controls.price)) {
+          <p id="subscription-price-error" class="field-error">
+            @if (form.controls.price.hasError('required')) {
+              Vul een bedrag in.
+            } @else {
+              Vul een bedrag van 0 of hoger in.
+            }
+          </p>
+        }
+      </div>
+
+      <div class="field-group">
+        <label class="field-label" for="subscription-frequency">
+          Facturatiecyclus <span aria-hidden="true">*</span>
+        </label>
+        <select
+          id="subscription-frequency"
+          class="field-control"
+          formControlName="billingFrequency"
+          required
+          [attr.aria-invalid]="isInvalid(form.controls.billingFrequency)"
+          [attr.aria-describedby]="
+            isInvalid(form.controls.billingFrequency) ? 'subscription-frequency-error' : null
+          "
+        >
+          <option value="">Kies een cyclus</option>
+          <option value="Weekly">Wekelijks</option>
+          <option value="Monthly">Maandelijks</option>
+          <option value="Quarterly">Per kwartaal</option>
+          <option value="SemiAnnually">Halfjaarlijks</option>
+          <option value="Yearly">Jaarlijks</option>
+        </select>
+        @if (isInvalid(form.controls.billingFrequency)) {
+          <p id="subscription-frequency-error" class="field-error">Kies een facturatiecyclus.</p>
+        }
+      </div>
+
+      <div class="field-group form-grid__wide">
+        <label class="field-label" for="subscription-payment-method">Betaalmethode</label>
+        <input
+          id="subscription-payment-method"
+          class="field-control"
+          type="text"
+          formControlName="paymentMethod"
+          maxlength="100"
+          autocomplete="off"
+          [attr.aria-invalid]="isInvalid(form.controls.paymentMethod)"
+          [attr.aria-describedby]="
+            isInvalid(form.controls.paymentMethod)
+              ? 'subscription-payment-method-error'
+              : 'subscription-payment-method-hint'
+          "
+        />
+        <p id="subscription-payment-method-hint" class="field-hint">
+          Noteer alleen een herkenbare naam, bijvoorbeeld “Gezamenlijke rekening”. Bewaar hier geen
+          kaart- of rekeningnummer.
+        </p>
+        @if (isInvalid(form.controls.paymentMethod)) {
+          <p id="subscription-payment-method-error" class="field-error">
+            Gebruik maximaal 100 tekens.
+          </p>
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="form-section" aria-labelledby="subscription-planning-heading">
+    <div class="section-heading">
+      <h2 id="subscription-planning-heading">Planning en verlenging</h2>
+      <p>Datums maken zichtbaar wanneer een betaling, proefperiode of opzegmoment nadert.</p>
+    </div>
+
+    <div class="form-grid">
+      <div class="field-group">
+        <label class="field-label" for="subscription-start-date">Startdatum</label>
+        <input
+          id="subscription-start-date"
+          class="field-control"
+          type="date"
+          formControlName="startDate"
+          [attr.aria-invalid]="isDateOrderInvalid()"
+          [attr.aria-describedby]="isDateOrderInvalid() ? 'subscription-date-order-error' : null"
+        />
+      </div>
+
+      <div class="field-group">
+        <label class="field-label" for="subscription-end-date">Einddatum</label>
+        <input
+          id="subscription-end-date"
+          class="field-control"
+          type="date"
+          formControlName="endDate"
+          [attr.aria-invalid]="isDateOrderInvalid()"
+          [attr.aria-describedby]="isDateOrderInvalid() ? 'subscription-date-order-error' : null"
+        />
+        @if (isDateOrderInvalid()) {
+          <p id="subscription-date-order-error" class="field-error">
+            De einddatum mag niet vóór de startdatum liggen.
+          </p>
+        }
+      </div>
+
+      <div class="field-group">
+        <label class="field-label" for="subscription-next-billing-date">
+          Volgende betaaldatum
+        </label>
+        <input
+          id="subscription-next-billing-date"
+          class="field-control"
+          type="date"
+          formControlName="nextBillingDate"
+        />
+      </div>
+
+      <div class="field-group">
+        <label class="field-label" for="subscription-trial-ends-on"> Einde proefperiode </label>
+        <input
+          id="subscription-trial-ends-on"
+          class="field-control"
+          type="date"
+          formControlName="trialEndsOn"
+        />
+      </div>
+
+      <label class="checkbox-field form-grid__wide" for="subscription-auto-renew">
+        <input
+          id="subscription-auto-renew"
+          class="checkbox-control"
+          type="checkbox"
+          formControlName="automaticallyRenews"
+        />
+        <span>
+          <strong>Automatisch verlengen</strong>
+          <small>Het abonnement loopt door wanneer je het niet tijdig opzegt.</small>
+        </span>
+      </label>
+
+      <div class="field-group form-grid__wide">
+        <label class="field-label" for="subscription-cancellation-days">
+          Opzegtermijn in dagen
+        </label>
+        <input
+          id="subscription-cancellation-days"
+          class="field-control field-control--short"
+          type="number"
+          formControlName="cancellationNoticeDays"
+          min="0"
+          step="1"
+          inputmode="numeric"
+          [attr.aria-invalid]="isInvalid(form.controls.cancellationNoticeDays)"
+          [attr.aria-describedby]="
+            isInvalid(form.controls.cancellationNoticeDays)
+              ? 'subscription-cancellation-days-error'
+              : 'subscription-cancellation-days-hint'
+          "
+        />
+        <p id="subscription-cancellation-days-hint" class="field-hint">
+          Hoeveel dagen vóór verlenging je uiterlijk moet opzeggen.
+        </p>
+        @if (isInvalid(form.controls.cancellationNoticeDays)) {
+          <p id="subscription-cancellation-days-error" class="field-error">
+            Vul een volledig aantal dagen van 0 of hoger in.
+          </p>
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="form-section" aria-labelledby="subscription-status-heading">
+    <div class="section-heading">
+      <h2 id="subscription-status-heading">Status en notities</h2>
+      <p>Geef aan of het abonnement actief is en bewaar nuttige informatie voor later.</p>
+    </div>
+
+    <div class="form-grid form-grid--single">
+      <label class="checkbox-field" for="subscription-active">
+        <input
+          id="subscription-active"
+          class="checkbox-control"
+          type="checkbox"
+          formControlName="isActive"
+        />
+        <span>
+          <strong>Actief abonnement</strong>
+          <small>Schakel dit uit wanneer het abonnement beëindigd of gepauzeerd is.</small>
+        </span>
+      </label>
+
+      <div class="field-group">
+        <label class="field-label" for="subscription-notes">Notities</label>
+        <textarea
+          id="subscription-notes"
+          class="field-control"
+          formControlName="notes"
+          maxlength="2000"
+          [attr.aria-invalid]="isInvalid(form.controls.notes)"
+          [attr.aria-describedby]="
+            isInvalid(form.controls.notes) ? 'subscription-notes-error' : null
+          "
+        ></textarea>
+        @if (isInvalid(form.controls.notes)) {
+          <p id="subscription-notes-error" class="field-error">Gebruik maximaal 2.000 tekens.</p>
+        }
+      </div>
+    </div>
+  </section>
+
+  @if (serverError()) {
+    <p class="form-server-error" role="alert">{{ serverError() }}</p>
+  }
+
+  <div class="form-actions">
+    @if (isSubmitting()) {
+      <span class="button button--secondary" aria-disabled="true">Annuleren</span>
+    } @else {
+      <a class="button button--secondary" [routerLink]="cancelLink()">Annuleren</a>
+    }
+    <button type="submit" class="button button--primary" [disabled]="isSubmitting()">
+      {{ isSubmitting() ? 'Bezig met opslaan...' : submitLabel() }}
+    </button>
+  </div>
+</form>

@@ -40,6 +40,7 @@ describe('AppShell', () => {
 
     expect(text).toContain('Overzicht');
     expect(text).toContain('Bezittingen');
+    expect(text).toContain('Abonnementen');
     expect(text).toContain('test@example.com');
   });
 

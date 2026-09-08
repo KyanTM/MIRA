@@ -1,0 +1,145 @@
+<div class="page-container">
+  <app-page-header
+    title="Abonnementen"
+    description="Volg terugkerende kosten, betaalmomenten en verlengingen op één plaats."
+  >
+    <a page-actions class="button button--primary" routerLink="/subscriptions/new">
+      <fa-icon [icon]="addIcon" aria-hidden="true"></fa-icon>
+      Abonnement toevoegen
+    </a>
+  </app-page-header>
+
+  <section class="subscription-controls panel" aria-label="Abonnementen zoeken en filteren">
+    <label class="search-field" for="subscription-search">
+      <span class="field-label">Zoeken in abonnementen</span>
+      <span class="search-input">
+        <fa-icon [icon]="searchIcon" aria-hidden="true"></fa-icon>
+        <input
+          #searchInput
+          id="subscription-search"
+          class="field-control"
+          type="search"
+          autocomplete="off"
+          placeholder="Zoek op naam of aanbieder"
+          [value]="searchTerm()"
+          (input)="setSearchTerm(searchInput.value)"
+        />
+      </span>
+    </label>
+
+    <label class="archive-filter">
+      <input
+        #includeArchivedControl
+        type="checkbox"
+        [checked]="includeArchived()"
+        (change)="setIncludeArchived(includeArchivedControl.checked)"
+      />
+      <span>Gearchiveerde abonnementen tonen</span>
+    </label>
+  </section>
+
+  @if (isLoading()) {
+    <section class="subscription-table panel" aria-label="Abonnementen laden" aria-busy="true">
+      <span class="sr-only">Abonnementen worden geladen</span>
+      @for (row of [1, 2, 3, 4]; track row) {
+        <div class="skeleton-row" aria-hidden="true">
+          <span class="skeleton skeleton--wide"></span>
+          <span class="skeleton"></span>
+          <span class="skeleton skeleton--short"></span>
+          <span class="skeleton"></span>
+          <span class="skeleton skeleton--short"></span>
+        </div>
+      }
+    </section>
+  } @else if (loadError(); as message) {
+    <app-error-state
+      title="Abonnementen niet beschikbaar"
+      [message]="message"
+      (retry)="loadSubscriptions()"
+    />
+  } @else if (subscriptions().length === 0) {
+    <app-empty-state
+      title="Nog geen abonnementen"
+      description="Voeg je eerste abonnement toe om kosten, betaaldata en verlengingen op te volgen."
+      actionLabel="Eerste abonnement toevoegen"
+      actionLink="/subscriptions/new"
+    />
+  } @else if (filteredSubscriptions().length === 0) {
+    <section class="no-results panel" aria-live="polite">
+      <h2>Geen resultaten</h2>
+      <p>Geen abonnementen komen overeen met “{{ searchTerm() }}”. Probeer een andere zoekterm.</p>
+      <button type="button" class="button button--secondary" (click)="setSearchTerm('')">
+        Zoekopdracht wissen
+      </button>
+    </section>
+  } @else {
+    <p class="result-count" aria-live="polite">
+      @if (searchTerm().trim()) {
+        {{ filteredSubscriptions().length }} van {{ subscriptions().length }} abonnementen
+      } @else {
+        {{ filteredSubscriptions().length }}
+        {{ filteredSubscriptions().length === 1 ? 'abonnement' : 'abonnementen' }}
+      }
+    </p>
+
+    <div class="subscription-table-wrap panel">
+      <table class="subscription-table">
+        <caption class="sr-only">
+          Overzicht van je abonnementen
+        </caption>
+        <thead>
+          <tr>
+            <th id="subscription-column-name" scope="col">Abonnement</th>
+            <th id="subscription-column-price" scope="col">Bedrag</th>
+            <th id="subscription-column-payment" scope="col">Volgende betaling</th>
+            <th id="subscription-column-renewal" scope="col">Verlenging</th>
+            <th id="subscription-column-status" scope="col">Status</th>
+            <th id="subscription-column-open" scope="col"><span class="sr-only">Openen</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (subscription of filteredSubscriptions(); track subscription.id) {
+            <tr>
+              <td headers="subscription-column-name" data-label="Abonnement">
+                <a class="subscription-name" [routerLink]="['/subscriptions', subscription.id]">
+                  {{ subscription.name }}
+                </a>
+                <span class="subscription-meta">{{ subscription.provider }}</span>
+              </td>
+              <td headers="subscription-column-price" data-label="Bedrag">
+                <span class="price">
+                  {{ subscription.price | currency: 'EUR' : 'symbol' : '1.2-2' }}
+                </span>
+                <span class="subscription-meta">
+                  {{ billingFrequencyLabel(subscription.billingFrequency) }}
+                </span>
+              </td>
+              <td headers="subscription-column-payment" data-label="Volgende betaling">
+                @if (subscription.nextBillingDate) {
+                  {{ subscription.nextBillingDate | dateOnly }}
+                } @else {
+                  <span class="muted-value">Niet gepland</span>
+                }
+              </td>
+              <td headers="subscription-column-renewal" data-label="Verlenging">
+                {{ subscription.automaticallyRenews ? 'Automatisch' : 'Handmatig' }}
+              </td>
+              <td headers="subscription-column-status" data-label="Status">
+                <app-status-badge [status]="displayStatus(subscription)" />
+              </td>
+              <td headers="subscription-column-open" class="open-cell">
+                <a
+                  class="open-link"
+                  [routerLink]="['/subscriptions', subscription.id]"
+                  [attr.aria-label]="subscription.name + ' openen'"
+                >
+                  Bekijken
+                </a>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>

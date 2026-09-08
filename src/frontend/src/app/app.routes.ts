@@ -58,6 +58,38 @@ export const routes: Routes = [
         title: 'Bezitting | MIRA',
       },
       {
+        path: 'subscriptions',
+        loadComponent: () =>
+          import('./features/subscriptions/subscription-list/subscription-list').then(
+            (module) => module.SubscriptionList,
+          ),
+        title: 'Abonnementen | MIRA',
+      },
+      {
+        path: 'subscriptions/new',
+        loadComponent: () =>
+          import('./features/subscriptions/subscription-create/subscription-create').then(
+            (module) => module.SubscriptionCreate,
+          ),
+        title: 'Nieuw abonnement | MIRA',
+      },
+      {
+        path: 'subscriptions/:id/edit',
+        loadComponent: () =>
+          import('./features/subscriptions/subscription-edit/subscription-edit').then(
+            (module) => module.SubscriptionEdit,
+          ),
+        title: 'Abonnement bewerken | MIRA',
+      },
+      {
+        path: 'subscriptions/:id',
+        loadComponent: () =>
+          import('./features/subscriptions/subscription-detail/subscription-detail').then(
+            (module) => module.SubscriptionDetailPage,
+          ),
+        title: 'Abonnement | MIRA',
+      },
+      {
         path: '',
         pathMatch: 'full',
         redirectTo: 'dashboard',

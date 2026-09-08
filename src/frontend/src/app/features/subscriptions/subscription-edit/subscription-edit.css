@@ -1,0 +1,53 @@
+.form-page {
+  max-width: 980px;
+}
+
+.loading-panel,
+.not-found {
+  padding: clamp(1.5rem, 5vw, 3rem);
+}
+
+.loading-line,
+.loading-block {
+  display: block;
+  border-radius: var(--mira-radius-sm);
+  background: var(--mira-surface-subtle);
+  animation: pulse 1.4s ease-in-out infinite alternate;
+}
+
+.loading-line {
+  width: min(28rem, 75%);
+  height: 0.9rem;
+  margin-top: 0.75rem;
+}
+
+.loading-line--title {
+  width: min(19rem, 52%);
+  height: 2rem;
+  margin-top: 0;
+}
+
+.loading-block {
+  height: 24rem;
+  margin-top: 2rem;
+}
+
+.not-found h1 {
+  margin: 0;
+  color: var(--mira-navy-950);
+  font-size: 1.5rem;
+  text-wrap: balance;
+}
+
+.not-found p {
+  max-width: 42rem;
+  margin: 0.55rem 0 1.25rem;
+  color: var(--mira-text-muted);
+  text-wrap: pretty;
+}
+
+@keyframes pulse {
+  to {
+    opacity: 0.45;
+  }
+}

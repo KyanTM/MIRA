@@ -1,0 +1,263 @@
+<div class="page-container">
+  @if (isLoading()) {
+    <section class="detail-loading panel" aria-busy="true">
+      <span class="sr-only">Abonnement wordt geladen</span>
+      <span class="skeleton skeleton--title" aria-hidden="true"></span>
+      <span class="skeleton skeleton--copy" aria-hidden="true"></span>
+      <div class="skeleton-grid" aria-hidden="true">
+        @for (cell of [1, 2, 3, 4, 5, 6]; track cell) {
+          <span class="skeleton skeleton--field"></span>
+        }
+      </div>
+    </section>
+  } @else if (notFound()) {
+    <section class="not-found panel" role="alert">
+      <h1>Abonnement niet gevonden</h1>
+      <p>Dit abonnement bestaat niet, is niet beschikbaar of behoort niet tot jouw account.</p>
+      <a class="button button--secondary" routerLink="/subscriptions"> Terug naar abonnementen </a>
+    </section>
+  } @else if (loadError(); as message) {
+    <app-error-state
+      title="Abonnement niet beschikbaar"
+      [message]="message"
+      (retry)="loadSubscription()"
+    />
+  } @else if (subscription(); as currentSubscription) {
+    <app-page-header
+      [title]="currentSubscription.name"
+      [description]="'Abonnement bij ' + currentSubscription.provider + '.'"
+      backLink="/subscriptions"
+      backLabel="Terug naar abonnementen"
+    >
+      @if (currentSubscription.status !== 'Archived') {
+        <a
+          page-actions
+          class="button button--secondary"
+          [routerLink]="['/subscriptions', currentSubscription.id, 'edit']"
+        >
+          <fa-icon [icon]="editIcon" aria-hidden="true"></fa-icon>
+          Bewerken
+        </a>
+      }
+    </app-page-header>
+
+    @if (successMessage(); as message) {
+      <p #successNotice class="notice notice--success" role="status" tabindex="-1">
+        {{ message }}
+      </p>
+    }
+
+    @if (actionError(); as message) {
+      <p class="notice notice--error" role="alert">{{ message }}</p>
+    }
+
+    @if (currentSubscription.status === 'Archived') {
+      <section class="archive-banner" aria-label="Gearchiveerd abonnement">
+        <div>
+          <strong>Dit abonnement is gearchiveerd</strong>
+          <p>Het blijft bewaard, maar staat niet meer tussen je actieve abonnementen.</p>
+        </div>
+        <button
+          type="button"
+          class="button button--secondary"
+          [disabled]="isChangingArchiveStatus()"
+          (click)="restoreSubscription()"
+        >
+          <fa-icon [icon]="restoreIcon" aria-hidden="true"></fa-icon>
+          {{ isChangingArchiveStatus() ? 'Herstellen…' : 'Abonnement herstellen' }}
+        </button>
+      </section>
+    }
+
+    <div class="detail-layout">
+      <div class="detail-content">
+        <section class="detail-section panel">
+          <div class="section-heading">
+            <h2>Betaling en verlenging</h2>
+            <app-status-badge [status]="displayStatus(currentSubscription)" />
+          </div>
+
+          <dl class="detail-grid">
+            <div>
+              <dt>Bedrag</dt>
+              <dd class="price-value">
+                {{ currentSubscription.price | currency: 'EUR' : 'symbol' : '1.2-2' }}
+              </dd>
+            </div>
+            <div>
+              <dt>Facturatie</dt>
+              <dd>{{ billingFrequencyLabel(currentSubscription.billingFrequency) }}</dd>
+            </div>
+            <div>
+              <dt>Volgende betaling</dt>
+              <dd>
+                {{
+                  currentSubscription.nextBillingDate
+                    ? (currentSubscription.nextBillingDate | dateOnly: 'd MMMM y')
+                    : 'Niet gepland'
+                }}
+              </dd>
+            </div>
+            <div>
+              <dt>Automatische verlenging</dt>
+              <dd>{{ currentSubscription.automaticallyRenews ? 'Ja' : 'Nee' }}</dd>
+            </div>
+          </dl>
+        </section>
+
+        <section class="detail-section panel">
+          <h2>Looptijd</h2>
+          <dl class="detail-grid">
+            <div>
+              <dt>Startdatum</dt>
+              <dd>
+                {{
+                  currentSubscription.startDate
+                    ? (currentSubscription.startDate | dateOnly: 'd MMMM y')
+                    : 'Niet ingevuld'
+                }}
+              </dd>
+            </div>
+            <div>
+              <dt>Einddatum</dt>
+              <dd>
+                {{
+                  currentSubscription.endDate
+                    ? (currentSubscription.endDate | dateOnly: 'd MMMM y')
+                    : 'Geen einddatum'
+                }}
+              </dd>
+            </div>
+            <div>
+              <dt>Proefperiode eindigt</dt>
+              <dd>
+                {{
+                  currentSubscription.trialEndsOn
+                    ? (currentSubscription.trialEndsOn | dateOnly: 'd MMMM y')
+                    : 'Geen proefperiode'
+                }}
+              </dd>
+            </div>
+            <div>
+              <dt>Abonnement loopt</dt>
+              <dd>{{ currentSubscription.isActive ? 'Ja' : 'Nee' }}</dd>
+            </div>
+          </dl>
+        </section>
+
+        <section class="detail-section panel">
+          <h2>Aanvullende gegevens</h2>
+          <dl class="detail-grid">
+            <div class="detail-grid__wide">
+              <dt>Beschrijving</dt>
+              <dd class="preserve-lines">
+                {{ currentSubscription.description || 'Niet ingevuld' }}
+              </dd>
+            </div>
+            <div>
+              <dt>Betaalmethode</dt>
+              <dd>{{ currentSubscription.paymentMethod || 'Niet ingevuld' }}</dd>
+            </div>
+            <div>
+              <dt>Opzegtermijn</dt>
+              <dd>{{ cancellationNoticeLabel(currentSubscription.cancellationNoticeDays) }}</dd>
+            </div>
+            <div>
+              <dt>Contract</dt>
+              <dd>
+                {{ currentSubscription.contractId ? 'Contract gekoppeld' : 'Niet gekoppeld' }}
+              </dd>
+            </div>
+            <div class="detail-grid__wide">
+              <dt>Notities</dt>
+              <dd class="preserve-lines">{{ currentSubscription.notes || 'Niet ingevuld' }}</dd>
+            </div>
+          </dl>
+        </section>
+      </div>
+
+      <aside class="detail-sidebar" aria-label="Beheer en technische informatie">
+        <section class="meta-panel panel">
+          <h2>Informatie</h2>
+          <dl>
+            <div>
+              <dt>Aanbieder</dt>
+              <dd>{{ currentSubscription.provider }}</dd>
+            </div>
+            <div>
+              <dt>Toegevoegd</dt>
+              <dd>{{ currentSubscription.createdAt | date: 'd MMM y, HH:mm' }}</dd>
+            </div>
+            <div>
+              <dt>Laatst gewijzigd</dt>
+              <dd>
+                {{
+                  currentSubscription.updatedAt
+                    ? (currentSubscription.updatedAt | date: 'd MMM y, HH:mm')
+                    : 'Nog niet gewijzigd'
+                }}
+              </dd>
+            </div>
+            @if (currentSubscription.archivedAt) {
+              <div>
+                <dt>Gearchiveerd</dt>
+                <dd>{{ currentSubscription.archivedAt | date: 'd MMM y, HH:mm' }}</dd>
+              </div>
+            }
+          </dl>
+        </section>
+
+        @if (currentSubscription.status !== 'Archived') {
+          <section class="archive-panel panel">
+            <h2>Archiveren</h2>
+            <p>Verberg dit abonnement uit je actieve overzicht zonder gegevens te verwijderen.</p>
+
+            <button
+              #archiveTrigger
+              type="button"
+              class="button button--secondary"
+              aria-controls="subscription-archive-confirmation"
+              [attr.aria-expanded]="showArchiveConfirmation()"
+              (click)="showArchiveConfirmation.set(!showArchiveConfirmation())"
+            >
+              <fa-icon [icon]="archiveIcon" aria-hidden="true"></fa-icon>
+              Abonnement archiveren
+            </button>
+
+            @if (showArchiveConfirmation()) {
+              <div
+                id="subscription-archive-confirmation"
+                class="archive-confirmation"
+                role="group"
+                aria-labelledby="subscription-archive-confirmation-title"
+              >
+                <strong id="subscription-archive-confirmation-title">
+                  Abonnement archiveren?
+                </strong>
+                <p>Het verdwijnt uit je actieve overzicht. Je kunt het later opnieuw herstellen.</p>
+                <div class="confirmation-actions">
+                  <button
+                    type="button"
+                    class="button button--danger"
+                    [disabled]="isChangingArchiveStatus()"
+                    (click)="archiveSubscription()"
+                  >
+                    {{ isChangingArchiveStatus() ? 'Archiveren…' : 'Abonnement archiveren' }}
+                  </button>
+                  <button
+                    type="button"
+                    class="button button--quiet"
+                    [disabled]="isChangingArchiveStatus()"
+                    (click)="closeArchiveConfirmation()"
+                  >
+                    Niet archiveren
+                  </button>
+                </div>
+              </div>
+            }
+          </section>
+        }
+      </aside>
+    </div>
+  }
+</div>

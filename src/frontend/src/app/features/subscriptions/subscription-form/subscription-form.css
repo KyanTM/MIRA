@@ -1,0 +1,170 @@
+form {
+  overflow: hidden;
+  border: 1px solid var(--mira-border);
+  border-radius: var(--mira-radius-md);
+  background: var(--mira-surface);
+}
+
+.validation-summary {
+  margin: 0;
+  border-bottom: 1px solid #efb9bd;
+  background: var(--mira-danger-bg);
+  color: var(--mira-danger);
+  padding: 0.9rem 1.5rem;
+  font-size: 0.875rem;
+  font-weight: 700;
+}
+
+.form-section {
+  display: grid;
+  grid-template-columns: minmax(180px, 0.7fr) minmax(0, 1.7fr);
+  gap: clamp(1.25rem, 4vw, 3rem);
+  padding: 1.5rem;
+}
+
+.form-section + .form-section {
+  border-top: 1px solid var(--mira-border);
+}
+
+.section-heading h2 {
+  margin: 0;
+  color: var(--mira-navy-950);
+  font-size: 1rem;
+  text-wrap: balance;
+}
+
+.section-heading p {
+  max-width: 38ch;
+  margin: 0.4rem 0 0;
+  color: var(--mira-text-muted);
+  font-size: 0.8375rem;
+  text-wrap: pretty;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.15rem;
+}
+
+.form-grid--single {
+  grid-template-columns: 1fr;
+}
+
+.form-grid__wide {
+  grid-column: 1 / -1;
+}
+
+.field-group {
+  min-width: 0;
+}
+
+.field-control--short {
+  max-width: 12rem;
+}
+
+.money-input {
+  position: relative;
+}
+
+.money-input > span {
+  position: absolute;
+  z-index: 1;
+  top: 50%;
+  left: 0.8rem;
+  transform: translateY(-50%);
+  color: var(--mira-text-muted);
+  font-weight: 700;
+}
+
+.money-input .field-control {
+  padding-left: 2rem;
+}
+
+.checkbox-field {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 0.75rem;
+  align-items: start;
+  border: 1px solid var(--mira-border);
+  border-radius: var(--mira-radius-sm);
+  background: var(--mira-surface-subtle);
+  padding: 0.85rem 0.9rem;
+  cursor: pointer;
+}
+
+.checkbox-field:hover {
+  border-color: var(--mira-border-strong);
+}
+
+.checkbox-control {
+  width: 1.15rem;
+  height: 1.15rem;
+  margin: 0.15rem 0 0;
+  accent-color: var(--mira-blue-700);
+}
+
+.checkbox-field strong,
+.checkbox-field small {
+  display: block;
+}
+
+.checkbox-field strong {
+  color: var(--mira-text);
+  font-size: 0.875rem;
+}
+
+.checkbox-field small {
+  margin-top: 0.2rem;
+  color: var(--mira-text-muted);
+  font-size: 0.8125rem;
+  line-height: 1.45;
+}
+
+.form-server-error {
+  margin: 0;
+  border-top: 1px solid #f1c5ca;
+  background: var(--mira-danger-bg);
+  color: var(--mira-danger);
+  padding: 1rem 1.5rem;
+  font-size: 0.875rem;
+  font-weight: 650;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  border-top: 1px solid var(--mira-border);
+  padding: 1.25rem 1.5rem;
+}
+
+@media (max-width: 760px) {
+  .form-section {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .section-heading p {
+    max-width: 65ch;
+  }
+}
+
+@media (max-width: 560px) {
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .form-grid__wide {
+    grid-column: auto;
+  }
+
+  .field-control--short {
+    max-width: none;
+  }
+
+  .form-actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+}

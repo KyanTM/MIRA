@@ -1,0 +1,16 @@
+<div class="page-container form-page">
+  <app-page-header
+    title="Abonnement toevoegen"
+    description="Leg de kosten, betaalmomenten en belangrijke datums van je abonnement vast."
+    backLink="/subscriptions"
+    backLabel="Terug naar abonnementen"
+  />
+
+  <app-subscription-form
+    submitLabel="Abonnement toevoegen"
+    cancelLink="/subscriptions"
+    [isSubmitting]="isSubmitting()"
+    [serverError]="serverError()"
+    (submitted)="createSubscription($event)"
+  />
+</div>

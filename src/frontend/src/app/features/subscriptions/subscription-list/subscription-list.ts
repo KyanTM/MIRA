@@ -5,18 +5,26 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faMagnifyingGlass, faPlus } from '@fortawesome/free-solid-svg-icons';
-import { finalize, Subscription } from 'rxjs';
+import { finalize, Subscription as RxSubscription } from 'rxjs';
 
 import { EmptyState } from '../../../shared/ui/empty-state/empty-state';
 import { ErrorState } from '../../../shared/ui/error-state/error-state';
 import { PageHeader } from '../../../shared/ui/page-header/page-header';
 import { StatusBadge } from '../../../shared/ui/status-badge/status-badge';
 import { DateOnlyPipe } from '../../../shared/date-only.pipe';
-import { AssetService } from '../data-access/asset.service';
-import { AssetSummary } from '../models';
+import { SubscriptionService } from '../data-access/subscription.service';
+import { BillingFrequency, SubscriptionSummary } from '../models';
+
+const BILLING_FREQUENCY_LABELS: Record<BillingFrequency, string> = {
+  Weekly: 'Per week',
+  Monthly: 'Per maand',
+  Quarterly: 'Per kwartaal',
+  SemiAnnually: 'Per halfjaar',
+  Yearly: 'Per jaar',
+};
 
 @Component({
-  selector: 'app-asset-list',
+  selector: 'app-subscription-list',
   imports: [
     CurrencyPipe,
     DateOnlyPipe,
@@ -27,55 +35,55 @@ import { AssetSummary } from '../models';
     RouterLink,
     StatusBadge,
   ],
-  templateUrl: './asset-list.html',
-  styleUrl: './asset-list.css',
+  templateUrl: './subscription-list.html',
+  styleUrl: './subscription-list.css',
 })
-export class AssetList {
-  private readonly assetService = inject(AssetService);
+export class SubscriptionList {
+  private readonly subscriptionService = inject(SubscriptionService);
   private readonly destroyRef = inject(DestroyRef);
-  private assetsRequest: Subscription | null = null;
+  private subscriptionsRequest: RxSubscription | null = null;
 
   readonly searchIcon = faMagnifyingGlass;
   readonly addIcon = faPlus;
-  readonly assets = signal<AssetSummary[]>([]);
+  readonly subscriptions = signal<SubscriptionSummary[]>([]);
   readonly isLoading = signal(true);
   readonly loadError = signal<string | null>(null);
   readonly searchTerm = signal('');
   readonly includeArchived = signal(false);
 
-  readonly filteredAssets = computed(() => {
+  readonly filteredSubscriptions = computed(() => {
     const query = this.searchTerm().trim().toLocaleLowerCase('nl-BE');
 
     if (query.length === 0) {
-      return this.assets();
+      return this.subscriptions();
     }
 
-    return this.assets().filter((asset) => {
-      const searchableValues = [asset.name, asset.brand, asset.model, asset.serialNumber];
-
-      return searchableValues.some((value) => value?.toLocaleLowerCase('nl-BE').includes(query));
-    });
+    return this.subscriptions().filter((subscription) =>
+      [subscription.name, subscription.provider].some((value) =>
+        value.toLocaleLowerCase('nl-BE').includes(query),
+      ),
+    );
   });
 
   constructor() {
-    this.loadAssets();
+    this.loadSubscriptions();
   }
 
-  loadAssets(): void {
-    this.assetsRequest?.unsubscribe();
+  loadSubscriptions(): void {
+    this.subscriptionsRequest?.unsubscribe();
     this.isLoading.set(true);
     this.loadError.set(null);
 
-    this.assetsRequest = this.assetService
-      .getAssets(this.includeArchived())
+    this.subscriptionsRequest = this.subscriptionService
+      .getSubscriptions(this.includeArchived())
       .pipe(
         takeUntilDestroyed(this.destroyRef),
         finalize(() => this.isLoading.set(false)),
       )
       .subscribe({
-        next: (assets) => this.assets.set(assets),
+        next: (subscriptions) => this.subscriptions.set(subscriptions),
         error: (error: HttpErrorResponse) => {
-          this.assets.set([]);
+          this.subscriptions.set([]);
           this.loadError.set(this.getLoadErrorMessage(error));
         },
       });
@@ -87,7 +95,19 @@ export class AssetList {
 
   setIncludeArchived(value: boolean): void {
     this.includeArchived.set(value);
-    this.loadAssets();
+    this.loadSubscriptions();
+  }
+
+  billingFrequencyLabel(frequency: BillingFrequency): string {
+    return BILLING_FREQUENCY_LABELS[frequency];
+  }
+
+  displayStatus(subscription: Pick<SubscriptionSummary, 'isActive' | 'status'>): string {
+    if (subscription.status !== 'Active') {
+      return subscription.status;
+    }
+
+    return subscription.isActive ? 'Active' : 'Inactive';
   }
 
   private getLoadErrorMessage(error: HttpErrorResponse): string {
@@ -95,6 +115,6 @@ export class AssetList {
       return 'De server is momenteel niet bereikbaar. Controleer of de backend draait.';
     }
 
-    return 'Je bezittingen konden niet worden geladen. Probeer het straks opnieuw.';
+    return 'Je abonnementen konden niet worden geladen. Probeer het straks opnieuw.';
   }
 }

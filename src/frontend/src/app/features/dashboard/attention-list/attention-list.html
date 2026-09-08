@@ -12,7 +12,11 @@
       @for (item of items(); track item.itemId + item.eventType + item.dueOn) {
         <li>
           <div class="item-copy">
-            <strong>{{ item.itemName }}</strong>
+            @if (item.itemType === 'Subscription') {
+              <a [routerLink]="['/subscriptions', item.itemId]">{{ item.itemName }}</a>
+            } @else {
+              <strong>{{ item.itemName }}</strong>
+            }
             <span>{{ eventLabel(item.eventType) }}</span>
           </div>
           <div class="date-copy" [attr.data-tone]="dateTone(item.dueOn)">

@@ -1,0 +1,278 @@
+.subscription-controls {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1.5rem;
+  margin-bottom: 1.25rem;
+  padding: 1rem 1.1rem;
+}
+
+.search-field {
+  width: min(100%, 31rem);
+}
+
+.search-input {
+  position: relative;
+  display: block;
+}
+
+.search-input fa-icon {
+  position: absolute;
+  top: 50%;
+  left: 0.85rem;
+  color: var(--mira-text-muted);
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+.search-input input {
+  padding: 0.7rem 0.8rem 0.7rem 2.55rem;
+}
+
+.search-input input::placeholder {
+  color: var(--mira-text-muted);
+  opacity: 1;
+}
+
+.archive-filter {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  gap: 0.65rem;
+  color: var(--mira-text);
+  font-size: 0.875rem;
+  font-weight: 650;
+  cursor: pointer;
+}
+
+.archive-filter input {
+  width: 1.05rem;
+  height: 1.05rem;
+  accent-color: var(--mira-blue-700);
+}
+
+.result-count {
+  margin: 0 0 0.65rem;
+  color: var(--mira-text-muted);
+  font-size: 0.875rem;
+}
+
+.subscription-table-wrap {
+  overflow: hidden;
+}
+
+.subscription-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.subscription-table th,
+.subscription-table td {
+  padding: 1rem 1.1rem;
+  text-align: left;
+  vertical-align: middle;
+}
+
+.subscription-table th {
+  border-bottom: 1px solid var(--mira-border);
+  background: var(--mira-surface-subtle);
+  color: var(--mira-text-muted);
+  font-size: 0.75rem;
+  font-weight: 750;
+  letter-spacing: 0.035em;
+  text-transform: uppercase;
+}
+
+.subscription-table tbody tr:not(:last-child) td {
+  border-bottom: 1px solid var(--mira-border);
+}
+
+.subscription-table tbody tr {
+  transition: background-color var(--mira-transition);
+}
+
+.subscription-table tbody tr:hover {
+  background: var(--mira-blue-50);
+}
+
+.subscription-name,
+.open-link {
+  color: var(--mira-blue-800);
+  font-weight: 750;
+  text-decoration: none;
+}
+
+.subscription-name,
+.subscription-meta {
+  overflow-wrap: anywhere;
+}
+
+.subscription-name:hover,
+.open-link:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.subscription-meta {
+  display: block;
+  margin-top: 0.2rem;
+  color: var(--mira-text-muted);
+  font-size: 0.8125rem;
+}
+
+.price {
+  color: var(--mira-navy-950);
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.muted-value {
+  color: var(--mira-text-muted);
+}
+
+.open-cell {
+  text-align: right !important;
+}
+
+.open-link {
+  font-size: 0.875rem;
+}
+
+.no-results {
+  padding: clamp(2rem, 7vw, 4rem) 1.25rem;
+  text-align: center;
+}
+
+.no-results h2 {
+  margin: 0;
+  color: var(--mira-navy-950);
+  font-size: 1.2rem;
+  text-wrap: balance;
+}
+
+.no-results p {
+  max-width: 34rem;
+  margin: 0.5rem auto 1.25rem;
+  color: var(--mira-text-muted);
+  text-wrap: pretty;
+}
+
+.skeleton-row {
+  display: grid;
+  grid-template-columns: 1.65fr repeat(4, 1fr);
+  gap: 1rem;
+  padding: 1.2rem 1.1rem;
+}
+
+.skeleton-row:not(:last-child) {
+  border-bottom: 1px solid var(--mira-border);
+}
+
+.skeleton {
+  display: block;
+  height: 0.9rem;
+  border-radius: 999px;
+  background: var(--mira-surface-subtle);
+  animation: pulse 1.4s ease-in-out infinite alternate;
+}
+
+.skeleton--wide {
+  width: 76%;
+}
+
+.skeleton--short {
+  width: 55%;
+}
+
+@keyframes pulse {
+  to {
+    opacity: 0.45;
+  }
+}
+
+@media (max-width: 920px) {
+  .subscription-controls {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .search-field {
+    width: 100%;
+  }
+
+  .subscription-table-wrap {
+    border: 0;
+    background: transparent;
+    overflow: visible;
+  }
+
+  .subscription-table,
+  .subscription-table tbody,
+  .subscription-table tr,
+  .subscription-table td {
+    display: block;
+    width: 100%;
+  }
+
+  .subscription-table thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  .subscription-table tr {
+    border: 1px solid var(--mira-border);
+    border-radius: var(--mira-radius-md);
+    background: var(--mira-surface);
+    padding: 0.45rem 1rem;
+  }
+
+  .subscription-table tr + tr {
+    margin-top: 0.75rem;
+  }
+
+  .subscription-table td {
+    display: grid;
+    grid-template-columns: minmax(7.5rem, 0.8fr) minmax(0, 1.2fr);
+    align-items: center;
+    gap: 0.75rem;
+    border-bottom: 1px solid var(--mira-border) !important;
+    padding: 0.75rem 0;
+  }
+
+  .subscription-table td::before {
+    color: var(--mira-text-muted);
+    content: attr(data-label);
+    font-size: 0.75rem;
+    font-weight: 750;
+    letter-spacing: 0.025em;
+    text-transform: uppercase;
+  }
+
+  .subscription-table td:first-child {
+    display: block;
+    padding-top: 0.8rem;
+  }
+
+  .subscription-table td:first-child::before,
+  .subscription-table .open-cell::before {
+    display: none;
+  }
+
+  .subscription-table .open-cell {
+    display: block;
+    border-bottom: 0 !important;
+    text-align: left !important;
+  }
+
+  .open-link {
+    display: inline-flex;
+    min-height: 40px;
+    align-items: center;
+  }
+}

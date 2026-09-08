@@ -11,14 +11,20 @@ import { ErrorState } from '../../../shared/ui/error-state/error-state';
 import { PageHeader } from '../../../shared/ui/page-header/page-header';
 import { StatusBadge } from '../../../shared/ui/status-badge/status-badge';
 import { DateOnlyPipe } from '../../../shared/date-only.pipe';
-import { AssetImages } from '../asset-images/asset-images';
-import { AssetService } from '../data-access/asset.service';
-import { AssetDetail as AssetDetailModel } from '../models';
+import { SubscriptionService } from '../data-access/subscription.service';
+import { BillingFrequency, SubscriptionDetail } from '../models';
+
+const BILLING_FREQUENCY_LABELS: Record<BillingFrequency, string> = {
+  Weekly: 'Wekelijks',
+  Monthly: 'Maandelijks',
+  Quarterly: 'Per kwartaal',
+  SemiAnnually: 'Halfjaarlijks',
+  Yearly: 'Jaarlijks',
+};
 
 @Component({
-  selector: 'app-asset-detail',
+  selector: 'app-subscription-detail',
   imports: [
-    AssetImages,
     CurrencyPipe,
     DateOnlyPipe,
     DatePipe,
@@ -28,50 +34,57 @@ import { AssetDetail as AssetDetailModel } from '../models';
     RouterLink,
     StatusBadge,
   ],
-  templateUrl: './asset-detail.html',
-  styleUrl: './asset-detail.css',
+  templateUrl: './subscription-detail.html',
+  styleUrl: './subscription-detail.css',
 })
-export class AssetDetailPage {
-  private readonly assetService = inject(AssetService);
+export class SubscriptionDetailPage {
+  private readonly subscriptionService = inject(SubscriptionService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly destroyRef = inject(DestroyRef);
-  private readonly assetId = this.route.snapshot.paramMap.get('id') ?? '';
+
+  private readonly subscriptionId = this.route.snapshot.paramMap.get('id') ?? '';
 
   readonly editIcon = faPen;
   readonly archiveIcon = faBoxArchive;
   readonly restoreIcon = faRotateLeft;
-  readonly asset = signal<AssetDetailModel | null>(null);
+  readonly subscription = signal<SubscriptionDetail | null>(null);
   readonly isLoading = signal(true);
   readonly isChangingArchiveStatus = signal(false);
   readonly loadError = signal<string | null>(null);
   readonly actionError = signal<string | null>(null);
-  readonly successMessage = signal<string | null>(this.readNavigationMessage('message'));
-  readonly uploadWarning = signal<string | null>(this.readNavigationMessage('warning'));
+  readonly successMessage = signal<string | null>(this.readNavigationMessage());
   readonly notFound = signal(false);
   readonly showArchiveConfirmation = signal(false);
   readonly archiveTrigger = viewChild<ElementRef<HTMLButtonElement>>('archiveTrigger');
   readonly successNotice = viewChild<ElementRef<HTMLParagraphElement>>('successNotice');
 
   constructor() {
-    this.loadAsset();
+    this.loadSubscription();
   }
 
-  loadAsset(): void {
+  loadSubscription(): void {
+    if (!this.subscriptionId) {
+      this.subscription.set(null);
+      this.notFound.set(true);
+      this.isLoading.set(false);
+      return;
+    }
+
     this.isLoading.set(true);
     this.loadError.set(null);
     this.notFound.set(false);
 
-    this.assetService
-      .getAsset(this.assetId)
+    this.subscriptionService
+      .getSubscription(this.subscriptionId)
       .pipe(
         takeUntilDestroyed(this.destroyRef),
         finalize(() => this.isLoading.set(false)),
       )
       .subscribe({
-        next: (asset) => this.asset.set(asset),
+        next: (subscription) => this.subscription.set(subscription),
         error: (error: HttpErrorResponse) => {
-          this.asset.set(null);
+          this.subscription.set(null);
 
           if (error.status === 404) {
             this.notFound.set(true);
@@ -83,7 +96,7 @@ export class AssetDetailPage {
       });
   }
 
-  archiveAsset(): void {
+  archiveSubscription(): void {
     if (this.isChangingArchiveStatus()) {
       return;
     }
@@ -92,17 +105,17 @@ export class AssetDetailPage {
     this.actionError.set(null);
     this.successMessage.set(null);
 
-    this.assetService
-      .archiveAsset(this.assetId)
+    this.subscriptionService
+      .archiveSubscription(this.subscriptionId)
       .pipe(
         takeUntilDestroyed(this.destroyRef),
         finalize(() => this.isChangingArchiveStatus.set(false)),
       )
       .subscribe({
-        next: (asset) => {
-          this.asset.set(asset);
+        next: (subscription) => {
+          this.subscription.set(subscription);
           this.showArchiveConfirmation.set(false);
-          this.successMessage.set('Bezitting gearchiveerd. Je kunt ze later altijd herstellen.');
+          this.successMessage.set('Abonnement gearchiveerd. Je kunt het later altijd herstellen.');
           this.focusSuccessNotice();
         },
         error: (error: HttpErrorResponse) => {
@@ -111,7 +124,7 @@ export class AssetDetailPage {
       });
   }
 
-  restoreAsset(): void {
+  restoreSubscription(): void {
     if (this.isChangingArchiveStatus()) {
       return;
     }
@@ -120,16 +133,18 @@ export class AssetDetailPage {
     this.actionError.set(null);
     this.successMessage.set(null);
 
-    this.assetService
-      .restoreAsset(this.assetId)
+    this.subscriptionService
+      .restoreSubscription(this.subscriptionId)
       .pipe(
         takeUntilDestroyed(this.destroyRef),
         finalize(() => this.isChangingArchiveStatus.set(false)),
       )
       .subscribe({
-        next: (asset) => {
-          this.asset.set(asset);
-          this.successMessage.set('Bezitting hersteld en opnieuw actief.');
+        next: (subscription) => {
+          this.subscription.set(subscription);
+          this.successMessage.set(
+            'Abonnement hersteld en opnieuw zichtbaar in je actieve overzicht.',
+          );
           this.focusSuccessNotice();
         },
         error: (error: HttpErrorResponse) => {
@@ -138,26 +153,41 @@ export class AssetDetailPage {
       });
   }
 
-  private getLoadErrorMessage(error: HttpErrorResponse): string {
-    if (error.status === 0) {
-      return 'De server is momenteel niet bereikbaar. Controleer of de backend draait.';
-    }
-
-    return 'De bezitting kon niet worden geladen. Probeer het opnieuw.';
-  }
-
   closeArchiveConfirmation(): void {
     this.showArchiveConfirmation.set(false);
     this.archiveTrigger()?.nativeElement.focus();
   }
 
-  private focusSuccessNotice(): void {
-    setTimeout(() => this.successNotice()?.nativeElement.focus());
+  billingFrequencyLabel(frequency: BillingFrequency): string {
+    return BILLING_FREQUENCY_LABELS[frequency];
   }
 
-  private readNavigationMessage(key: 'message' | 'warning'): string | null {
-    const message = this.router.getCurrentNavigation()?.extras.state?.[key];
-    return typeof message === 'string' ? message : null;
+  displayStatus(subscription: Pick<SubscriptionDetail, 'isActive' | 'status'>): string {
+    if (subscription.status !== 'Active') {
+      return subscription.status;
+    }
+
+    return subscription.isActive ? 'Active' : 'Inactive';
+  }
+
+  cancellationNoticeLabel(days: number | null): string {
+    if (days === null) {
+      return 'Niet ingevuld';
+    }
+
+    if (days === 0) {
+      return 'Geen opzegtermijn';
+    }
+
+    return `${days} ${days === 1 ? 'dag' : 'dagen'}`;
+  }
+
+  private getLoadErrorMessage(error: HttpErrorResponse): string {
+    if (error.status === 0) {
+      return 'De server is momenteel niet bereikbaar. Controleer of de backend draait.';
+    }
+
+    return 'Het abonnement kon niet worden geladen. Probeer het opnieuw.';
   }
 
   private getActionErrorMessage(error: HttpErrorResponse, action: 'archive' | 'restore'): string {
@@ -165,13 +195,22 @@ export class AssetDetailPage {
     const participle = action === 'archive' ? 'gearchiveerd' : 'hersteld';
 
     if (error.status === 404) {
-      return `Deze bezitting bestaat niet meer of je hebt geen toegang om ze te ${infinitive}.`;
+      return `Dit abonnement bestaat niet meer of je hebt geen toegang om het te ${infinitive}.`;
     }
 
     if (error.status === 0) {
-      return `De server is niet bereikbaar. De bezitting kon niet worden ${participle}.`;
+      return `De server is niet bereikbaar. Het abonnement kon niet worden ${participle}.`;
     }
 
-    return `De bezitting kon niet worden ${participle}. Probeer het opnieuw.`;
+    return `Het abonnement kon niet worden ${participle}. Probeer het opnieuw.`;
+  }
+
+  private focusSuccessNotice(): void {
+    setTimeout(() => this.successNotice()?.nativeElement.focus());
+  }
+
+  private readNavigationMessage(): string | null {
+    const message = this.router.getCurrentNavigation()?.extras.state?.['message'];
+    return typeof message === 'string' ? message : null;
   }
 }

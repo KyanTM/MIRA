@@ -1,4 +1,5 @@
 import { Component, input } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faCalendarCheck } from '@fortawesome/free-solid-svg-icons';
 
@@ -14,7 +15,7 @@ const EVENT_LABELS: Record<DashboardEventType, string> = {
 
 @Component({
   selector: 'app-attention-list',
-  imports: [FontAwesomeModule],
+  imports: [FontAwesomeModule, RouterLink],
   templateUrl: './attention-list.html',
   styleUrl: './attention-list.css',
 })

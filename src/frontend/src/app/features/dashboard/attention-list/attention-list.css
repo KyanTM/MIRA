@@ -61,18 +61,35 @@
 }
 
 .item-copy strong,
+.item-copy a,
 .item-copy span,
 .date-copy strong,
 .date-copy span {
   display: block;
 }
 
-.item-copy strong {
+.item-copy strong,
+.item-copy a {
+  display: block;
   overflow: hidden;
   color: var(--mira-text);
   font-size: 0.9rem;
+  font-weight: 700;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.item-copy a {
+  text-decoration-color: transparent;
+  text-underline-offset: 3px;
+  transition:
+    color var(--mira-transition),
+    text-decoration-color var(--mira-transition);
+}
+
+.item-copy a:hover {
+  color: var(--mira-blue-800);
+  text-decoration-color: currentColor;
 }
 
 .item-copy span,

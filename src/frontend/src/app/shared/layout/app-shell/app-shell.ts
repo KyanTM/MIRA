@@ -4,6 +4,7 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import {
   faBoxArchive,
   faHouse,
+  faRepeat,
   faRightFromBracket,
   faShieldHalved,
 } from '@fortawesome/free-solid-svg-icons';
@@ -27,6 +28,7 @@ export class AppShell {
 
   readonly dashboardIcon = faHouse;
   readonly assetsIcon = faBoxArchive;
+  readonly subscriptionsIcon = faRepeat;
   readonly securityIcon = faShieldHalved;
   readonly logoutIcon = faRightFromBracket;
 
