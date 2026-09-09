@@ -1,3 +1,4 @@
+import { ContractPicker } from '../../records/contract-picker';
 import { Component, ElementRef, effect, inject, input, output, signal } from '@angular/core';
 import {
   AbstractControl,
@@ -39,7 +40,7 @@ const dateOrderValidator: ValidatorFn = (control: AbstractControl): ValidationEr
 
 @Component({
   selector: 'app-subscription-form',
-  imports: [ReactiveFormsModule, RouterLink],
+  imports: [ReactiveFormsModule, RouterLink, ContractPicker],
   templateUrl: './subscription-form.html',
   styleUrl: './subscription-form.css',
 })
@@ -56,6 +57,7 @@ export class SubscriptionForm {
 
   readonly form = new FormGroup(
     {
+      contractId: new FormControl('', { nonNullable: true }),
       name: new FormControl('', {
         nonNullable: true,
         validators: [Validators.required, nonWhitespaceValidator, Validators.maxLength(200)],
@@ -105,6 +107,7 @@ export class SubscriptionForm {
       }
 
       this.form.reset({
+        contractId: subscription.contractId ?? '',
         name: subscription.name,
         description: subscription.description ?? '',
         provider: subscription.provider,
@@ -153,7 +156,7 @@ export class SubscriptionForm {
       paymentMethod: this.normalizeOptionalText(value.paymentMethod),
       isActive: value.isActive,
       notes: this.normalizeOptionalText(value.notes),
-      contractId: this.subscription()?.contractId ?? null,
+      contractId: value.contractId || null,
     });
   }
 

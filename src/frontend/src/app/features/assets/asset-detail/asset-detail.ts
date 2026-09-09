@@ -1,3 +1,4 @@
+import { ItemRelations } from '../../records/item-relations';
 import { CurrencyPipe, DatePipe } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, DestroyRef, ElementRef, inject, signal, viewChild } from '@angular/core';
@@ -18,6 +19,7 @@ import { AssetDetail as AssetDetailModel } from '../models';
 @Component({
   selector: 'app-asset-detail',
   imports: [
+    ItemRelations,
     AssetImages,
     CurrencyPipe,
     DateOnlyPipe,

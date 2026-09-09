@@ -28,6 +28,9 @@ describe('DashboardSummary', () => {
 
     expect(links.map((link) => link.getAttribute('href'))).toEqual([
       '/assets',
+      '/documents',
+      '/warranties',
+      '/contracts',
       '/subscriptions',
     ]);
   });

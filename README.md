@@ -77,6 +77,28 @@ user can retry the image without creating another asset.
 Run the frontend tests with `npm test -- --watch=false` in `src/frontend`. Private-image API flow
 tests are included in `dotnet test tests/Mira.API.Tests/Mira.API.Tests.csproj`.
 
+### Contracts, warranties and documents
+
+The frontend provides searchable overviews, create/edit forms, details and archive/restore actions
+for assets, subscriptions, contracts, warranties and documents. Dashboard counts, recent items and
+upcoming deadlines link to their corresponding pages.
+
+Warranties require an owned asset. Asset details show linked warranties and documents, and allow
+adding either with the relationship already selected. Subscriptions can select or clear a contract.
+Documents support uploads, metadata editing, type filters, protected downloads, PDF/image previews
+and links to multiple assets, subscriptions, contracts or warranties. Permanent document deletion
+requires archiving first and explicit confirmation. Uploads support PDF, PNG, JPEG, WebP, DOCX,
+XLSX and TXT, with a default limit of 20 MiB.
+
+The shared blue interface uses 4–6 px corners, compact controls and tables, and responsive navigation.
+Registration requires at least 8 characters, without mandatory uppercase, lowercase, digit, special
+character or distinct-character combinations. The existing failed-login lockout remains enabled.
+Restart the API after changing the Identity configuration.
+
+Validation: `npm run build` and `npm test -- --watch=false` from `src/frontend`, plus
+`dotnet test Mira.slnx -c Release` from the repository root. Release builds avoid locking the output
+of an API instance being debugged in Visual Studio.
+
 ## Development guidelines
 
 - Keep domain rules independent from ASP.NET Core and database concerns.

@@ -13,7 +13,7 @@
   background: var(--mira-navy-950);
   color: #ffffff;
   padding: 0.7rem 1rem;
-  font-weight: 700;
+  font-weight: 600;
   transition: transform var(--mira-transition);
 }
 
@@ -24,7 +24,7 @@
 .app-frame {
   display: grid;
   min-height: 100vh;
-  grid-template-columns: 250px minmax(0, 1fr);
+  grid-template-columns: 224px minmax(0, 1fr);
 }
 
 .sidebar {
@@ -59,14 +59,14 @@
 
 .nav-link {
   display: flex;
-  min-height: 44px;
+  min-height: 38px;
   align-items: center;
   gap: 0.75rem;
   border-radius: var(--mira-radius-sm);
   color: #344b66;
-  padding: 0.7rem 0.8rem;
-  font-size: 0.9375rem;
-  font-weight: 700;
+  padding: 0.55rem 0.7rem;
+  font-size: 0.875rem;
+  font-weight: 600;
   text-decoration: none;
   transition:
     background-color var(--mira-transition),
@@ -138,7 +138,7 @@
   background: transparent;
   color: var(--mira-text-muted);
   padding: 0.65rem 0.7rem;
-  font-weight: 700;
+  font-weight: 600;
   cursor: pointer;
 }
 
@@ -166,6 +166,7 @@
 @media (max-width: 860px) {
   .app-frame {
     grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr;
   }
 
   .sidebar {
@@ -228,7 +229,7 @@
   }
 }
 
-@media (max-width: 700px) {
+@media (max-width: 860px) {
   .sidebar {
     grid-template-columns: 1fr auto;
   }
@@ -260,6 +261,34 @@
     flex-direction: column;
     gap: 0.2rem;
     padding: 0.45rem 0.2rem;
+    font-size: 0.75rem;
+  }
+}
+
+@media (max-width: 860px) {
+  .primary-nav {
+    overflow-x: auto;
+    padding-bottom: 0.15rem;
+  }
+  .nav-link {
+    flex: 0 0 auto;
+    min-height: 44px;
+    white-space: nowrap;
+  }
+}
+
+@media (max-width: 600px) {
+  .primary-nav {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    overflow: visible;
+    gap: 0.2rem;
+  }
+  .nav-link {
+    flex-direction: row;
+    justify-content: flex-start;
+    gap: 0.35rem;
+    padding: 0.4rem 0.45rem;
     font-size: 0.75rem;
   }
 }

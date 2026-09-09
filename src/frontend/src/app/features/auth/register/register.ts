@@ -33,7 +33,7 @@ export class Register {
 
     password: new FormControl('', {
       nonNullable: true,
-      validators: [Validators.required, Validators.minLength(12)],
+      validators: [Validators.required, Validators.minLength(8)],
     }),
 
     confirmPassword: new FormControl('', {

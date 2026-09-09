@@ -15,7 +15,7 @@
             @if (item.itemType === 'Subscription') {
               <a [routerLink]="['/subscriptions', item.itemId]">{{ item.itemName }}</a>
             } @else {
-              <strong>{{ item.itemName }}</strong>
+              <a [routerLink]="['/' + itemPath(item.itemType), item.itemId]">{{ item.itemName }}</a>
             }
             <span>{{ eventLabel(item.eventType) }}</span>
           </div>

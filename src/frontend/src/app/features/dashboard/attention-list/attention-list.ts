@@ -1,3 +1,4 @@
+import { itemPath } from '../../records/record-config';
 import { Component, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
@@ -20,6 +21,7 @@ const EVENT_LABELS: Record<DashboardEventType, string> = {
   styleUrl: './attention-list.css',
 })
 export class AttentionList {
+  readonly itemPath = itemPath;
   readonly items = input.required<DashboardAttentionItem[]>();
   readonly generatedAt = input.required<string>();
   readonly attentionThrough = input.required<string>();

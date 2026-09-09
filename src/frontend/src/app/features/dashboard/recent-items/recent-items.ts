@@ -1,3 +1,4 @@
+import { itemPath } from '../../records/record-config';
 import { DatePipe } from '@angular/common';
 import { Component, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
@@ -21,6 +22,7 @@ const ITEM_TYPE_LABELS: Record<DashboardItemType, string> = {
   styleUrl: './recent-items.css',
 })
 export class RecentItems {
+  readonly itemPath = itemPath;
   readonly items = input.required<DashboardRecentItem[]>();
 
   typeLabel(itemType: DashboardItemType): string {

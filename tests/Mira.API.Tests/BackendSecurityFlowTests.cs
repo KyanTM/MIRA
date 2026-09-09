@@ -17,6 +17,25 @@ public sealed class BackendSecurityFlowTests : IClassFixture<MiraApiFactory>
         _factory = factory;
     }
 
+    [Theory]
+    [InlineData("Abcdef12", HttpStatusCode.OK)]
+    [InlineData("abcdefgh", HttpStatusCode.OK)]
+    [InlineData("ABCDEFGH", HttpStatusCode.OK)]
+    [InlineData("12345678", HttpStatusCode.OK)]
+    [InlineData("abababab", HttpStatusCode.OK)]
+    [InlineData("een lange wachtwoordzin", HttpStatusCode.OK)]
+    [InlineData("Abcde12", HttpStatusCode.BadRequest)]
+    public async Task RegistrationRequiresLengthWithoutCharacterCompositionRules(
+        string password, HttpStatusCode expectedStatus)
+    {
+        using var client = CreateClient();
+        var token = await GetAntiforgeryTokenAsync(client);
+        using var request = CreateJsonRequest(HttpMethod.Post, "/api/auth/register",
+            new { email = $"password-policy-{Guid.NewGuid():N}@example.com", password }, token);
+        var response = await client.SendAsync(request);
+        Assert.Equal(expectedStatus, response.StatusCode);
+    }
+
     [Fact]
     public async Task UnsafeEndpointWithoutAntiforgeryTokenReturnsBadRequest()
     {

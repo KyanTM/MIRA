@@ -3,7 +3,7 @@
   align-items: flex-end;
   justify-content: space-between;
   gap: 1.5rem;
-  margin-bottom: 1.75rem;
+  margin-bottom: 1.5rem;
 }
 
 .page-heading {
@@ -29,8 +29,8 @@
 h1 {
   margin: 0;
   color: var(--mira-navy-950);
-  font-size: clamp(1.75rem, 3vw, 2.25rem);
-  font-weight: 780;
+  font-size: 1.75rem;
+  font-weight: 700;
   letter-spacing: -0.025em;
   line-height: 1.15;
   overflow-wrap: anywhere;
@@ -41,7 +41,7 @@ p {
   max-width: 68ch;
   margin: 0.6rem 0 0;
   color: var(--mira-text-muted);
-  font-size: 0.975rem;
+  font-size: 0.875rem;
   text-wrap: pretty;
 }
 

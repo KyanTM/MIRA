@@ -6,7 +6,7 @@
 
 .metric {
   min-width: 0;
-  padding: 1.25rem 1.35rem;
+  padding: 1rem 1.15rem;
 }
 
 .metric--link {
@@ -38,7 +38,7 @@
 
 .metric strong {
   color: var(--mira-navy-950);
-  font-size: clamp(1.45rem, 3vw, 1.9rem);
+  font-size: 1.65rem;
   font-variant-numeric: tabular-nums;
   line-height: 1.1;
 }
@@ -61,15 +61,18 @@
     border-left: 0;
   }
 
-  .metric:nth-child(even) {
+  .metric[data-index='1'],
+  .metric[data-index='3'] {
     border-left: 1px solid var(--mira-border);
   }
 
-  .metric:nth-child(n + 3) {
+  .metric[data-index='2'],
+  .metric[data-index='3'],
+  .metric[data-index='4'] {
     border-top: 1px solid var(--mira-border);
   }
 
-  .metric:nth-child(5) {
+  .metric[data-index='4'] {
     grid-column: 1 / -1;
     border-left: 0;
   }
