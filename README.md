@@ -91,9 +91,9 @@ requires archiving first and explicit confirmation. Uploads support PDF, PNG, JP
 XLSX and TXT, with a default limit of 20 MiB.
 
 The shared blue interface uses 4–6 px corners, compact controls and tables, and responsive navigation.
-Registration requires at least 8 characters; a special character is optional. The existing uppercase,
-lowercase, digit and four-distinct-character requirements remain in place. Restart the API after
-changing the Identity configuration.
+Registration requires at least 8 characters, without mandatory uppercase, lowercase, digit, special
+character or distinct-character combinations. The existing failed-login lockout remains enabled.
+Restart the API after changing the Identity configuration.
 
 Validation: `npm run build` and `npm test -- --watch=false` from `src/frontend`, plus
 `dotnet test Mira.slnx -c Release` from the repository root. Release builds avoid locking the output

@@ -19,8 +19,13 @@ public sealed class BackendSecurityFlowTests : IClassFixture<MiraApiFactory>
 
     [Theory]
     [InlineData("Abcdef12", HttpStatusCode.OK)]
+    [InlineData("abcdefgh", HttpStatusCode.OK)]
+    [InlineData("ABCDEFGH", HttpStatusCode.OK)]
+    [InlineData("12345678", HttpStatusCode.OK)]
+    [InlineData("abababab", HttpStatusCode.OK)]
+    [InlineData("een lange wachtwoordzin", HttpStatusCode.OK)]
     [InlineData("Abcde12", HttpStatusCode.BadRequest)]
-    public async Task RegistrationAcceptsEightCharactersWithoutSpecialCharacter(
+    public async Task RegistrationRequiresLengthWithoutCharacterCompositionRules(
         string password, HttpStatusCode expectedStatus)
     {
         using var client = CreateClient();
